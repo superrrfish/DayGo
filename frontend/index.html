@@ -3,33 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
-    <!-- Bootstrap CSS -->
-     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>DayGo</title>
 </head>
 <body>
-    <!-- Navigation Bar -->
-     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-            <div class="container px-4">
-                <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-                        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-                    </ul>
-                </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div class="container px-4">
+            <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
             </div>
-        </nav>
+        </div>
+    </nav>
 
-    <h1>Welcome to My Website</h1>
-    
-    <p>This is a paragraph below the heading.</p>
+    <header class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h1 class="display-4">Welcome to DayGo</h1>
+            <p class="lead">Plan your day and commute on one platform.</p>
+            <button id="startNowBtn" type="button" class="btn btn-outline-light btn-lg">Start Now</button>
+        </div>
+    </header>
 
+    <section class="content-section">
+        <div class="container">
+            <h1>Welcome to My Website</h1>
+            <p>This is a paragraph below the heading.</p>
+        </div>
+    </section>
 
+    <div id="popupOverlay" class="popup-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+        <div class="popup-card">
+            <button id="closePopupBtn" class="popup-close" type="button" aria-label="Close popup">&times;</button>
 
+            <div id="introStep" class="form-step">
+                <h2 id="popupTitle">Plan your day</h2>
+                <p>Choose your destination, arrival time, and travel mode to get a smarter commute plan.</p>
+                <button id="continueBtn" type="button" class="popup-action primary">Continue</button>
+            </div>
+
+            <div id="eventStep" class="form-step hidden">
+                <h2>Step 1: Add an event</h2>
+                <form id="eventForm" class="event-form">
+                    <label>
+                        Event title
+                        <input type="text" id="eventTitle" placeholder="Team meeting" required>
+                    </label>
+
+                    <div class="event-row">
+                        <label>
+                            Event start
+                            <input type="time" id="eventStart" required>
+                        </label>
+                        <label>
+                            Event end
+                            <input type="time" id="eventEnd" required>
+                        </label>
+                    </div>
+
+                    <label>
+                        Location
+                        <input type="text" id="eventLocation" placeholder="Office or address">
+                    </label>
+
+                    <div class="button-row">
+                        <button type="submit" class="popup-action primary">Save event</button>
+                        <button type="button" id="backBtn" class="popup-action secondary">Back</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const startNowBtn = document.getElementById('startNowBtn');
+        const popupOverlay = document.getElementById('popupOverlay');
+        const closePopupBtn = document.getElementById('closePopupBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const backBtn = document.getElementById('backBtn');
+        const introStep = document.getElementById('introStep');
+        const eventStep = document.getElementById('eventStep');
+        const eventForm = document.getElementById('eventForm');
+
+        function openPopup() {
+            popupOverlay.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            introStep.classList.remove('hidden');
+            eventStep.classList.add('hidden');
+        }
+
+        function closePopup() {
+            popupOverlay.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            introStep.classList.remove('hidden');
+            eventStep.classList.add('hidden');
+            eventForm.reset();
+        }
+
+        function showEventForm() {
+            introStep.classList.add('hidden');
+            eventStep.classList.remove('hidden');
+        }
+
+        function showIntro() {
+            eventStep.classList.add('hidden');
+            introStep.classList.remove('hidden');
+        }
+
+        startNowBtn.addEventListener('click', openPopup);
+        closePopupBtn.addEventListener('click', closePopup);
+        continueBtn.addEventListener('click', showEventForm);
+        backBtn.addEventListener('click', showIntro);
+
+        eventForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            alert('Event saved. Next, we can build your travel plan.');
+            closePopup();
+        });
+
+        popupOverlay.addEventListener('click', function (event) {
+            if (event.target === popupOverlay) {
+                closePopup();
+            }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !popupOverlay.classList.contains('hidden')) {
+                closePopup();
+            }
+        });
+    </script>
 </body>
 </html>
