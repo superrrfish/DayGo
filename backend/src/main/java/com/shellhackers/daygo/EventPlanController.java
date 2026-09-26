@@ -1,0 +1,23 @@
+package com.shellhackers.daygo;
+
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/events")
+class EventPlanController {
+
+    private final EventController eventController;
+    private final PlanController planController;
+
+    EventPlanController(EventController eventController, PlanController planController) {
+        this.eventController = eventController;
+        this.planController = planController;
+    }
+
+    @PostMapping("/{id}/plan")
+    public PlanResponse planForEvent(@PathVariable String id, @RequestParam(required = false) Integer delayMinutes) {
+        EventResponse event = eventController.getEvent(id);
+        PlanRequest request = new PlanRequest(event.location(), event.startTime(), event.mode(), delayMinutes);
+        return planController.getPlan(request);
+    }
+}
