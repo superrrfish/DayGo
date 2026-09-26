@@ -243,7 +243,7 @@ public class DayGoCLI implements CommandLineRunner {
         System.out.println("  ██████╔╝██║  ██║   ██║   ╚██████╔╝╚██████╔╝");
         System.out.println("  ╚═════╝ ╚═╝  ╚═╝   ╚═╝    ╚═════╝  ╚═════╝ ");
         System.out.println(ANSI_RESET);
-        System.out.println("  ShellHacks 2024 — Type 'help' to get started.");
+        System.out.println("  ShellHacks 2026 — Type 'help' to get started.");
         System.out.println();
     }
 
