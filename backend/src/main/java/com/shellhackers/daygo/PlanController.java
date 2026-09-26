@@ -11,6 +11,10 @@ public class PlanController {
 
     @PostMapping("/api/plan")
     public PlanResponse getPlan(@RequestBody PlanRequest request) {
+        if (request.destination() == null || request.arrivalTime() == null || request.mode() == null) {
+            throw new IllegalArgumentException("destination, arrivalTime, and mode are all required.");
+        }
+
         LocalTime arrivalTime = LocalTime.parse(request.arrivalTime(), TIME_FORMAT);
 
         int travelMinutes = estimateTravelMinutes(request.mode());
