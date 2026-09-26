@@ -1,4 +1,4 @@
-package com.shellhackers.daygo;
+package com.shellhackers.daygo.model;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;

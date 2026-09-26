@@ -1,14 +1,19 @@
-package com.shellhackers.daygo;
+package com.shellhackers.daygo.controller;
 
+import com.shellhackers.daygo.model.Event;
+import com.shellhackers.daygo.model.EventResponse;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/api/events")
 public class EventController {
 
-    private final Map<String, Event> events = new ConcurrentHashMap<>();
+    private final Map<String, Event> events;
+
+    public EventController(Map<String, Event> eventMap) {
+        this.events = eventMap;
+    }
 
     @PostMapping
     public EventResponse createEvent(@RequestBody Event event) {

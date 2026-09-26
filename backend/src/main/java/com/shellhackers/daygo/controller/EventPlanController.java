@@ -1,5 +1,8 @@
-package com.shellhackers.daygo;
+package com.shellhackers.daygo.controller;
 
+import com.shellhackers.daygo.model.EventResponse;
+import com.shellhackers.daygo.model.PlanRequest;
+import com.shellhackers.daygo.model.PlanResponse;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,9 +18,11 @@ class EventPlanController {
     }
 
     @PostMapping("/{id}/plan")
-    public PlanResponse planForEvent(@PathVariable String id, @RequestParam(required = false) Integer delayMinutes) {
+    public PlanResponse planForEvent(@PathVariable String id,
+                                     @RequestParam(required = false) Integer delayMinutes,
+                                     @RequestParam(required = false) String origin) {
         EventResponse event = eventController.getEvent(id);
-        PlanRequest request = new PlanRequest(event.location(), event.startTime(), event.mode(), delayMinutes);
+        PlanRequest request = new PlanRequest(event.location(), event.startTime(), event.mode(), delayMinutes, origin);
         return planController.getPlan(request);
     }
 }

@@ -1,4 +1,4 @@
-package com.shellhackers.daygo;
+package com.shellhackers.daygo.model;
 
 public record PlanResponse(
         String departureTime,
