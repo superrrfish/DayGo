@@ -8,177 +8,133 @@
     <title>DayGo</title>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
-    <div class="container px-4">
-        <a class="navbar-brand" href="#page-top">DayGo</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarResponsive">
-            <ul class="navbar-nav ms-auto">
-                <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-                <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-                <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-            </ul>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="mainNav">
+        <div class="container px-4">
+            <a class="navbar-brand" href="#page-top">Start Bootstrap</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                </ul>
+            </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
-<header class="bg-primary text-white text-center py-5">
-    <div class="container">
-        <h1 class="display-4">Welcome to DayGo</h1>
-        <p class="lead">Plan your day and commute on one platform.</p>
-        <button id="startNowBtn" type="button" class="btn btn-outline-light btn-lg">Start Now</button>
-    </div>
-</header>
-
-<div id="popupOverlay" class="popup-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
-    <div class="popup-card">
-        <button id="closePopupBtn" class="popup-close" type="button" aria-label="Close popup">&times;</button>
-
-        <div id="introStep" class="form-step">
-            <h2 id="popupTitle">Plan your day</h2>
-            <p>Choose your destination, arrival time, and travel mode to get a smarter commute plan.</p>
-            <button id="continueBtn" type="button" class="popup-action primary">Continue</button>
+    <header class="bg-primary text-white text-center py-5">
+        <div class="container">
+            <h1 class="display-4">Welcome to DayGo</h1>
+            <p class="lead">Plan your day and commute on one platform.</p>
+            <button id="startNowBtn" type="button" class="btn btn-outline-light btn-lg">Start Now</button>
         </div>
+    </header>
 
-        <div id="eventStep" class="form-step hidden">
-            <h2>Step 1: Add an event</h2>
-            <form id="eventForm" class="event-form">
-                <label>
-                    Event title
-                    <input type="text" id="eventTitle" placeholder="Team meeting" required>
-                </label>
+    <section class="content-section">
+        <div class="container">
+            <h1>Welcome to My Website</h1>
+            <p>This is a paragraph below the heading.</p>
+        </div>
+    </section>
 
-                <div class="event-row">
+    <div id="popupOverlay" class="popup-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+        <div class="popup-card">
+            <button id="closePopupBtn" class="popup-close" type="button" aria-label="Close popup">&times;</button>
+
+            
+
+            <div id="eventStep" class="form-step">
+                <h2>Step 1: Add an event</h2>
+                <form id="eventForm" class="event-form">
                     <label>
-                        Event start
-                        <input type="time" id="eventStart" required>
+                        Event title
+                        <input type="text" id="eventTitle" placeholder="Team meeting" required>
                     </label>
+
+                    <div class="event-row">
+                        <label>
+                            Event start
+                            <input type="time" id="eventStart" required>
+                        </label>
+                        <label>
+                            Event end
+                            <input type="time" id="eventEnd" required>
+                        </label>
+                    </div>
+
                     <label>
-                        Event end
-                        <input type="time" id="eventEnd" required>
+                        Location
+                        <input type="text" id="eventLocation" placeholder="Office or address">
                     </label>
-                </div>
 
-                <label>
-                    Location
-                    <input type="text" id="eventLocation" placeholder="Office or address">
-                </label>
-
-                <label>
-                    Travel mode
-                    <select id="eventMode" required>
-                        <option value="CAR">Car</option>
-                        <option value="RIDESHARE">Rideshare</option>
-                        <option value="TRANSIT">Transit</option>
-                        <option value="WALK">Walk</option>
-                        <option value="BIKE">Bike</option>
-                    </select>
-                </label>
-
-                <div class="button-row">
-                    <button type="submit" class="popup-action primary">Save event</button>
-                    <button type="button" id="backBtn" class="popup-action secondary">Back</button>
-                </div>
-            </form>
+                    <div class="button-row">
+                        <button type="submit" class="popup-action primary">Save event</button>
+                        <button type="button" id="backBtn" class="popup-action secondary">Back</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    const API_BASE = "http://localhost:8081"; // swap to playit tunnel URL if needed
+    <script>
+        const startNowBtn = document.getElementById('startNowBtn');
+        const popupOverlay = document.getElementById('popupOverlay');
+        const closePopupBtn = document.getElementById('closePopupBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const backBtn = document.getElementById('backBtn');
+        const introStep = document.getElementById('introStep');
+        const eventStep = document.getElementById('eventStep');
+        const eventForm = document.getElementById('eventForm');
 
-    const startNowBtn = document.getElementById('startNowBtn');
-    const popupOverlay = document.getElementById('popupOverlay');
-    const closePopupBtn = document.getElementById('closePopupBtn');
-    const continueBtn = document.getElementById('continueBtn');
-    const backBtn = document.getElementById('backBtn');
-    const introStep = document.getElementById('introStep');
-    const eventStep = document.getElementById('eventStep');
-    const eventForm = document.getElementById('eventForm');
+        function openPopup() {
+            popupOverlay.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            introStep.classList.remove('hidden');
+            eventStep.classList.add('hidden');
+        }
 
-    function openPopup() {
-        popupOverlay.classList.remove('hidden');
-        document.body.classList.add('modal-open');
-        introStep.classList.remove('hidden');
-        eventStep.classList.add('hidden');
-    }
+        function closePopup() {
+            popupOverlay.classList.add('hidden');
+            document.body.classList.remove('modal-open');
+            introStep.classList.remove('hidden');
+            eventStep.classList.add('hidden');
+            eventForm.reset();
+        }
 
-    function closePopup() {
-        popupOverlay.classList.add('hidden');
-        document.body.classList.remove('modal-open');
-        introStep.classList.remove('hidden');
-        eventStep.classList.add('hidden');
-        eventForm.reset();
-    }
+        function showEventForm() {
+            introStep.classList.add('hidden');
+            eventStep.classList.remove('hidden');
+        }
 
-    function showEventForm() {
-        introStep.classList.add('hidden');
-        eventStep.classList.remove('hidden');
-    }
+        function showIntro() {
+            eventStep.classList.add('hidden');
+            introStep.classList.remove('hidden');
+        }
 
-    function showIntro() {
-        eventStep.classList.add('hidden');
-        introStep.classList.remove('hidden');
-    }
+        startNowBtn.addEventListener('click', openPopup);
+        closePopupBtn.addEventListener('click', closePopup);
+        continueBtn.addEventListener('click', showEventForm);
+        backBtn.addEventListener('click', showIntro);
 
-    startNowBtn.addEventListener('click', openPopup);
-    closePopupBtn.addEventListener('click', closePopup);
-    continueBtn.addEventListener('click', showEventForm);
-    backBtn.addEventListener('click', showIntro);
+        eventForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            alert('Event saved. Next, we can build your travel plan.');
+            closePopup();
+        });
 
-    eventForm.addEventListener('submit', async function (event) {
-        event.preventDefault();
-
-        const payload = {
-            title: document.getElementById('eventTitle').value,
-            location: document.getElementById('eventLocation').value,
-            startTime: document.getElementById('eventStart').value,
-            endTime: document.getElementById('eventEnd').value,
-            mode: document.getElementById('eventMode').value
-        };
-
-        try {
-            const res = await fetch(`${API_BASE}/api/events`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                alert('Error: ' + err.error);
-                return;
+        popupOverlay.addEventListener('click', function (event) {
+            if (event.target === popupOverlay) {
+                closePopup();
             }
+        });
 
-            const createdEvent = await res.json();
-            console.log('Event created:', createdEvent);
-
-            const planRes = await fetch(`${API_BASE}/api/events/${createdEvent.id}/plan`, {
-                method: 'POST'
-            });
-            const plan = await planRes.json();
-
-            alert(plan.message);
-            closePopup();
-        } catch (err) {
-            alert('Could not reach the server. Is the backend running?');
-            console.error(err);
-        }
-    });
-
-    popupOverlay.addEventListener('click', function (event) {
-        if (event.target === popupOverlay) {
-            closePopup();
-        }
-    });
-
-    document.addEventListener('keydown', function (event) {
-        if (event.key === 'Escape' && !popupOverlay.classList.contains('hidden')) {
-            closePopup();
-        }
-    });
-</script>
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && !popupOverlay.classList.contains('hidden')) {
+                closePopup();
+            }
+        });
+    </script>
 </body>
 </html>
