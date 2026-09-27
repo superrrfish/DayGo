@@ -3,6 +3,8 @@ package com.shellhackers.daygo.controller;
 import com.shellhackers.daygo.model.Event;
 import com.shellhackers.daygo.model.EventResponse;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.*;
 
 @RestController
@@ -18,7 +20,10 @@ public class EventController {
     @PostMapping
     public EventResponse createEvent(@RequestBody Event event) {
         String id = UUID.randomUUID().toString();
-        Event saved = new Event(id, event.title(), event.location(), event.startTime(), event.endTime(), event.mode());
+        String date = (event.date() != null && !event.date().isBlank())
+                ? event.date()
+                : LocalDate.now().toString(); // default to today
+        Event saved = new Event(id, event.title(), event.location(), date, event.startTime(), event.endTime(), event.mode());
         events.put(id, saved);
         return EventResponse.from(saved);
     }
@@ -38,5 +43,15 @@ public class EventController {
     @DeleteMapping("/{id}")
     public void deleteEvent(@PathVariable String id) {
         events.remove(id);
+    }
+
+    @PutMapping("/{id}")
+    public EventResponse updateEvent(@PathVariable String id, @RequestBody Event event) {
+        if (!events.containsKey(id)) throw new NoSuchElementException("Event not found: " + id);
+        Event updated = new Event(id, event.title(), event.location(),
+                event.date() != null && !event.date().isBlank() ? event.date() : LocalDate.now().toString(),
+                event.startTime(), event.endTime(), event.mode());
+        events.put(id, updated);
+        return EventResponse.from(updated);
     }
 }
