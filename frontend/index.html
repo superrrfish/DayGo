@@ -1024,6 +1024,146 @@
       background: var(--surface2);
     }
 
+    #settings-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 28px;
+      overflow-y: auto;
+    }
+
+    #notifications-view {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding: 28px;
+      overflow-y: auto;
+    }
+
+    .settings-header {
+      margin-bottom: 20px;
+    }
+
+    .settings-header h2 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.8px;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .settings-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 20px;
+    }
+
+    .settings-card h3 {
+      margin: 0 0 10px;
+      font-size: 15px;
+    }
+
+    .settings-card p,
+    .settings-card label {
+      color: var(--text-muted);
+      font-size: 13px;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .notifications-header {
+      margin-bottom: 20px;
+    }
+
+    .notifications-header h2 {
+      margin: 0;
+      font-size: 30px;
+      letter-spacing: -0.8px;
+    }
+
+    .notification-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .notification-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .notification-item strong {
+      font-size: 15px;
+    }
+
+    .notification-item span {
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .notification-empty {
+      background: var(--surface);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .toggle-pill {
+      width: 42px;
+      height: 22px;
+      border-radius: 999px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      position: relative;
+      display: inline-block;
+    }
+
+    .toggle-pill::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--text);
+      transition: transform var(--transition);
+    }
+
+    .toggle-pill.on {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.5);
+    }
+
+    .toggle-pill.on::after {
+      transform: translateX(20px);
+      background: var(--accent);
+    }
+
     #calendar-view {
       flex: 1;
       display: flex;
@@ -1396,6 +1536,12 @@
       <button class="nav-btn" id="nav-calendar-btn" onclick="switchView('calendar')">
         <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
       </button>
+      <button class="nav-btn" id="nav-notifications-btn" onclick="switchView('notifications')" title="Notifications">
+        <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
+      </button>
+      <button class="nav-btn" id="nav-settings-btn" onclick="switchView('settings')" title="Settings">
+        <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
+      </button>
     </div>
     <div id="content-area">
       <div id="home-view">
@@ -1455,6 +1601,57 @@
             <div id="calendar-day-list"></div>
           </div>
         </div>
+      </div>
+      <div id="settings-view" style="display:none;">
+        <div class="settings-header">
+          <h2>Settings</h2>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>Preferences</h3>
+            <div class="settings-row">
+              <label>Dark mode</label>
+              <button type="button" class="toggle-pill on" data-theme-toggle="dark" aria-label="Dark mode enabled" aria-pressed="true"></button>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Notifications</h3>
+            <div class="settings-row">
+              <label>Event reminders</label>
+              <button type="button" class="toggle-pill on" data-reminder-toggle aria-label="Event reminders enabled" aria-pressed="true"></button>
+            </div>
+            <div class="settings-row" id="reminder-time-row" style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+              <label>Send reminder</label>
+              <select id="reminder-minutes" style="padding:8px 10px; border-radius:10px; border:1px solid var(--border); background: var(--surface2); color: var(--text); font: inherit; min-width: 120px;">
+                <option value="15">15 minutes</option>
+                <option value="30">30 minutes</option>
+                <option value="60">60 minutes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="settings-card">
+            <h3>Travel</h3>
+            <div class="settings-row" style="display:block; border-top:none; padding-top:0; margin-top:0;">
+              <label for="default-transport">Default transportation</label>
+              <select id="default-transport" style="width:100%; margin-top:10px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background: var(--surface2); color: var(--text); font: inherit;">
+                <option value="CAR">Car</option>
+                <option value="TRANSIT">Transit</option>
+                <option value="WALK">Walk</option>
+                <option value="BIKE">Bicycle</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="notifications-view" style="display:none;">
+        <div class="notifications-header">
+          <h2>Notifications</h2>
+        </div>
+        <div id="notification-list" class="notification-list"></div>
       </div>
     </div>
     <div id="resize-handle"></div>
@@ -1595,7 +1792,109 @@
 
     const isMobile = () => window.innerWidth <= 640;
 
+    const DEFAULT_TRANSPORT_KEY = 'daygo-default-transport';
+    const REMINDER_ENABLED_KEY = 'daygo-reminder-enabled';
+    const REMINDER_MINUTES_KEY = 'daygo-reminder-minutes';
+    const NOTIFICATION_LOG_KEY = 'daygo-notification-log';
+
+    function normalizeTransportMode(mode) {
+      const nextMode = (mode || 'CAR').toUpperCase();
+      return ['CAR', 'TRANSIT', 'WALK', 'BIKE'].includes(nextMode) ? nextMode : 'CAR';
+    }
+
+    function getDefaultTransportMode() {
+      const saved = localStorage.getItem(DEFAULT_TRANSPORT_KEY);
+      return normalizeTransportMode(saved || 'CAR');
+    }
+
+    function getReminderSettings() {
+      const enabled = localStorage.getItem(REMINDER_ENABLED_KEY) !== 'false';
+      const minutes = Number(localStorage.getItem(REMINDER_MINUTES_KEY) || 30);
+      return {
+        enabled,
+        minutes: [15, 30, 60].includes(minutes) ? minutes : 30
+      };
+    }
+
+    function applyReminderSettings() {
+      const settings = getReminderSettings();
+      const reminderToggle = document.querySelector('[data-reminder-toggle]');
+      const reminderSelect = document.getElementById('reminder-minutes');
+      const reminderRow = document.getElementById('reminder-time-row');
+
+      if (reminderToggle) {
+        const isOn = settings.enabled;
+        reminderToggle.classList.toggle('on', isOn);
+        reminderToggle.setAttribute('aria-label', isOn ? 'Event reminders enabled' : 'Event reminders disabled');
+        reminderToggle.setAttribute('aria-pressed', String(isOn));
+      }
+
+      if (reminderSelect) {
+        reminderSelect.value = String(settings.minutes);
+        reminderSelect.disabled = !settings.enabled;
+      }
+
+      if (reminderRow) {
+        reminderRow.style.opacity = settings.enabled ? '1' : '0.55';
+      }
+    }
+
+    function syncDefaultTransportSetting() {
+      const savedMode = getDefaultTransportMode();
+      const transportSelect = document.getElementById('default-transport');
+      const modalModeSelect = document.getElementById('f-mode');
+
+      if (transportSelect) {
+        transportSelect.value = savedMode;
+      }
+      if (modalModeSelect) {
+        modalModeSelect.value = savedMode;
+      }
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
+      const savedTheme = localStorage.getItem('daygo-theme') || 'dark';
+      applyTheme(savedTheme);
+      bindThemeToggles();
+      syncDefaultTransportSetting();
+      applyReminderSettings();
+
+      const transportSelect = document.getElementById('default-transport');
+      if (transportSelect) {
+        transportSelect.addEventListener('change', (event) => {
+          const nextMode = normalizeTransportMode(event.target.value);
+          localStorage.setItem(DEFAULT_TRANSPORT_KEY, nextMode);
+          const modalModeSelect = document.getElementById('f-mode');
+          if (modalModeSelect) modalModeSelect.value = nextMode;
+        });
+      }
+
+      const reminderToggle = document.querySelector('[data-reminder-toggle]');
+      if (reminderToggle) {
+        reminderToggle.addEventListener('click', () => {
+          const current = getReminderSettings();
+          const nextEnabled = !current.enabled;
+          localStorage.setItem(REMINDER_ENABLED_KEY, String(nextEnabled));
+          applyReminderSettings();
+          renderNotifications();
+        });
+      }
+
+      const reminderSelect = document.getElementById('reminder-minutes');
+      if (reminderSelect) {
+        reminderSelect.addEventListener('change', (event) => {
+          const nextMinutes = [15, 30, 60].includes(Number(event.target.value)) ? Number(event.target.value) : 30;
+          localStorage.setItem(REMINDER_MINUTES_KEY, String(nextMinutes));
+          applyReminderSettings();
+          renderNotifications();
+        });
+      }
+
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission().catch(() => {});
+      }
+
+      setInterval(pollReminderNotifications, 30000);
       initMap();
       initResize();
       loadWeather();
@@ -1857,6 +2156,8 @@
       }
 
       renderArchive(past);
+      renderNotifications();
+      pollReminderNotifications();
 
       if (currentView === 'calendar') {
         renderCalendar();
@@ -1873,11 +2174,22 @@
     function switchView(view) {
       currentView = view;
       const isHome = view === 'home';
+      const isCalendar = view === 'calendar';
+      const isSettings = view === 'settings';
+      const isNotifications = view === 'notifications';
+
       document.getElementById('home-view').style.display = isHome ? 'flex' : 'none';
-      document.getElementById('calendar-view').style.display = isHome ? 'none' : 'flex';
+      document.getElementById('calendar-view').style.display = isCalendar ? 'flex' : 'none';
+      document.getElementById('settings-view').style.display = isSettings ? 'flex' : 'none';
+      document.getElementById('notifications-view').style.display = isNotifications ? 'flex' : 'none';
+
       document.getElementById('nav-home-btn').classList.toggle('active', isHome);
-      document.getElementById('nav-calendar-btn').classList.toggle('active', !isHome);
-      if (!isHome) renderCalendar();
+      document.getElementById('nav-calendar-btn').classList.toggle('active', isCalendar);
+      document.getElementById('nav-notifications-btn').classList.toggle('active', isNotifications);
+      document.getElementById('nav-settings-btn').classList.toggle('active', isSettings);
+
+      if (isCalendar) renderCalendar();
+      if (isNotifications) renderNotifications();
     }
 
     // --- Calendar page ---
@@ -2085,6 +2397,88 @@
       </div>`;
     }
 
+    function getNotificationLog() {
+      try {
+        const raw = localStorage.getItem(NOTIFICATION_LOG_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveNotificationLog(entries) {
+      localStorage.setItem(NOTIFICATION_LOG_KEY, JSON.stringify(entries));
+    }
+
+    function addNotificationItem(notification) {
+      const entries = getNotificationLog();
+      const nextEntry = {
+        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+        createdAt: new Date().toISOString(),
+        ...notification
+      };
+      saveNotificationLog([nextEntry, ...entries].slice(0, 50));
+      if (currentView === 'notifications') renderNotifications();
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById('notification-list');
+      const settings = getReminderSettings();
+      const notifications = getNotificationLog();
+
+      if (!settings.enabled) {
+        list.innerHTML = '<div class="notification-empty">Reminders are off. Turn them on in Settings to receive departure alerts.</div>';
+        return;
+      }
+
+      if (!notifications.length) {
+        list.innerHTML = '<div class="notification-empty">No reminder notifications yet. Upcoming departure alerts will appear here.</div>';
+        return;
+      }
+
+      list.innerHTML = notifications.map(notification => `
+        <div class="notification-item">
+          <strong>${escapeHtml(notification.title)}</strong>
+          <span>${escapeHtml(notification.message)}</span>
+          <span>${new Date(notification.createdAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
+        </div>
+      `).join('');
+    }
+
+    function triggerReminderNotification(event, minutesUntil) {
+      const title = 'DayGo reminder';
+      const message = `${event.title} is leaving in ${minutesUntil} minutes. Suggested departure is ${formatTime12(event.startTime)}.`;
+
+      if (window.Notification && Notification.permission === 'granted') {
+        new Notification(title, { body: message });
+      }
+
+      addNotificationItem({ title, message });
+    }
+
+    function pollReminderNotifications() {
+      const settings = getReminderSettings();
+      if (!settings.enabled) return;
+
+      const now = new Date();
+      const upcoming = (allEvents || []).filter(e => e.status === 'upcoming' || e.status === 'active');
+      const key = 'daygo-notified-events';
+      const sent = JSON.parse(localStorage.getItem(key) || '{}');
+
+      upcoming.forEach(event => {
+        const dateKey = event.date || new Date().toISOString().slice(0, 10);
+        const eventTime = new Date(`${dateKey}T${event.startTime || '00:00'}`);
+        const minutesUntil = Math.round((eventTime - now) / 60000);
+        const eventToken = `${event.id}|${dateKey}|${event.startTime}`;
+
+        if (minutesUntil >= 0 && minutesUntil <= settings.minutes && !sent[eventToken]) {
+          sent[eventToken] = Date.now();
+          localStorage.setItem(key, JSON.stringify(sent));
+          triggerReminderNotification(event, minutesUntil);
+        }
+      });
+    }
+
     function renderArchive(past) {
       const list = document.getElementById('archive-list');
       const clearBtn = document.getElementById('archive-clear-btn');
@@ -2197,7 +2591,9 @@
 
     function clearModalFields() {
       ['f-title', 'f-location', 'f-start', 'f-end', 'f-date', 'f-description'].forEach(id => document.getElementById(id).value = '');
-      document.getElementById('f-mode').value = 'CAR';
+      document.getElementById('f-mode').value = getDefaultTransportMode();
+      const settingSelect = document.getElementById('default-transport');
+      if (settingSelect) settingSelect.value = getDefaultTransportMode();
       selectedLocation = null;
     }
 
@@ -2387,12 +2783,49 @@
     window.addEventListener('resize', syncArchiveDrawerWidth);
     function closeArchive() { document.getElementById('archive-overlay').classList.remove('open'); }
 
-    function toggleTheme() {
+    function applyTheme(theme) {
+      const nextTheme = theme === 'light' ? 'light' : 'dark';
       const html = document.documentElement;
-      const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
-      html.dataset.theme = next;
-      document.getElementById('theme-toggle').textContent = next === 'dark' ? '🌙' : '☀️';
-      setMapTheme(next);
+      html.dataset.theme = nextTheme;
+      localStorage.setItem('daygo-theme', nextTheme);
+
+      const toggleBtn = document.getElementById('theme-toggle');
+      if (toggleBtn) {
+        toggleBtn.textContent = nextTheme === 'dark' ? '🌙' : '☀️';
+      }
+
+      document.querySelectorAll('[data-theme-toggle]').forEach((toggle) => {
+        const isOn = nextTheme === 'dark';
+        toggle.classList.toggle('on', isOn);
+        toggle.setAttribute('aria-label', isOn ? 'Dark mode enabled' : 'Dark mode disabled');
+        toggle.setAttribute('aria-pressed', String(isOn));
+      });
+
+      setMapTheme(nextTheme);
+    }
+
+    function bindThemeToggles() {
+      const themeToggleButton = document.getElementById('theme-toggle');
+      const settingsToggle = document.querySelector('[data-theme-toggle]');
+
+      if (themeToggleButton) {
+        themeToggleButton.onclick = () => {
+          const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+          applyTheme(next);
+        };
+      }
+
+      if (settingsToggle) {
+        settingsToggle.onclick = () => {
+          const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+          applyTheme(next);
+        };
+      }
+    }
+
+    function toggleTheme() {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
     }
   </script>
 </body>
