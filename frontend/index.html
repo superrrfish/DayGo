@@ -23,7 +23,7 @@
       --card-w: 280px;
       --radius: 14px;
       --transition: 0.22s cubic-bezier(.4, 0, .2, 1);
-      --topbar-h: 56px;
+      --topbar-h: 84px;
     }
 
     [data-theme="light"] {
@@ -64,14 +64,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 24px;
+      padding: 0 36px;
       padding-top: env(safe-area-inset-top, 0px);
       background: var(--bg);
       border-bottom: 1px solid var(--border);
     }
 
     #logo {
-      font-size: 18px;
+      font-size: 27px;
       font-weight: 700;
       letter-spacing: -0.5px;
       color: var(--text);
@@ -83,20 +83,80 @@
 
     #weather-widget {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      font-size: 21px;
       font-weight: 500;
       color: var(--text);
     }
 
+    #weather-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     #weather-widget .emoji {
-      font-size: 20px;
+      font-size: 30px;
     }
 
     #weather-temp {
-      font-size: 16px;
+      font-size: 24px;
       font-weight: 600;
+    }
+
+    #weather-city {
+      font-size: 17px;
+      color: var(--text-muted);
+    }
+
+    #topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #locate-btn {
+      width: 34px;
+      height: 34px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: color var(--transition), background var(--transition), border-color var(--transition);
+    }
+
+    #locate-btn:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    #locate-btn.active {
+      color: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px 2px rgba(59, 130, 246, 0.55);
+    }
+
+    #locate-btn.denied {
+      color: #f59e0b;
+      border-color: #f59e0b;
+      box-shadow: 0 0 12px 2px rgba(245, 158, 11, 0.55);
+    }
+
+    #locate-btn.locating {
+      animation: pulseLocate 1s ease-in-out infinite;
+    }
+
+    @keyframes pulseLocate {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
 
     #main {
@@ -582,17 +642,6 @@
       flex-direction: column;
       min-width: 200px;
       max-width: 60vw;
-    }
-
-    #map-label {
-      padding: 16px 20px 12px;
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
     }
 
     #map {
@@ -1379,7 +1428,7 @@
 
     @media (max-width: 640px) {
       :root {
-        --topbar-h: 52px;
+        --topbar-h: 78px;
         --card-w: 240px;
       }
 
@@ -1478,10 +1527,6 @@
         border-top: 1px solid var(--border);
       }
 
-      #map-label {
-        display: none;
-      }
-
       #create-btn,
       #theme-toggle {
         bottom: calc(16px + env(safe-area-inset-bottom, 0px));
@@ -1521,9 +1566,17 @@
 
   <div id="topbar">
     <div id="logo">Day<span>Go</span></div>
-    <div id="weather-widget">
-      <span class="emoji" id="weather-emoji">—</span>
-      <span id="weather-temp">—</span>
+    <div id="topbar-right">
+      <button id="locate-btn" onclick="handleLocateClick()" title="Use my location">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      </button>
+      <div id="weather-widget">
+        <div id="weather-main">
+          <span class="emoji" id="weather-emoji">—</span>
+          <span id="weather-temp">—</span>
+        </div>
+        <span id="weather-city"></span>
+      </div>
     </div>
   </div>
 
@@ -1656,7 +1709,6 @@
     </div>
     <div id="resize-handle"></div>
     <div id="map-panel">
-      <div id="map-label">Map</div>
       <div id="map"></div>
     </div>
   </div>
@@ -1900,6 +1952,7 @@
       loadWeather();
       loadEvents();
       setInterval(loadEvents, 30000);
+      watchGeolocationPermission();
     });
 
     document.addEventListener('visibilitychange', () => {
@@ -1927,6 +1980,7 @@
         userCoords = JSON.parse(cached);
         map.flyTo({ center: userCoords, zoom: 13 });
         userMarker = new mapboxgl.Marker({ color: '#3b82f6' }).setLngLat(userCoords).addTo(map);
+        updateMapLabelLocation(userCoords);
       }
 
       getUserCoordsAsync().then(coords => {
@@ -1934,7 +1988,17 @@
         map.flyTo({ center: coords, zoom: 13 });
         if (userMarker) userMarker.remove();
         userMarker = new mapboxgl.Marker({ color: '#3b82f6' }).setLngLat(coords).addTo(map);
+        updateMapLabelLocation(coords);
       });
+    }
+
+    async function updateMapLabelLocation(coords) {
+      try {
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords[0]},${coords[1]}.json?types=place&access_token=${MAPBOX_TOKEN}`);
+        const data = await res.json();
+        const city = data.features?.[0]?.text;
+        document.getElementById('weather-city').textContent = city || '';
+      } catch (e) { /* keep default label */ }
     }
 
     function setMapTheme(theme) {
@@ -2061,29 +2125,92 @@
     async function loadWeather() {
       try {
         const coords = await getUserCoordsAsync();
-        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords[1]}&longitude=${coords[0]}&current=temperature_2m,weathercode&temperature_unit=fahrenheit&timezone=auto`);
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords[1]}&longitude=${coords[0]}&current=temperature_2m,weathercode,is_day&temperature_unit=fahrenheit&timezone=auto`);
         const data = await res.json();
         document.getElementById('weather-temp').textContent = `${Math.round(data.current.temperature_2m)}°F`;
-        document.getElementById('weather-emoji').textContent = weatherEmoji(data.current.weathercode);
+        document.getElementById('weather-emoji').textContent = weatherEmoji(data.current.weathercode, data.current.is_day === 1);
       } catch (e) { console.warn('Weather failed:', e); }
     }
 
-    function getUserCoordsAsync() {
+    function setLocateStatus(status) {
+      const btn = document.getElementById('locate-btn');
+      if (!btn) return;
+      btn.classList.remove('active', 'denied', 'locating');
+      if (status === 'locating') {
+        btn.classList.add('locating');
+        btn.title = 'Locating…';
+      } else if (status === 'active') {
+        btn.classList.add('active');
+        btn.title = 'Using your current location — tap to refresh';
+      } else if (status === 'denied') {
+        btn.classList.add('denied');
+        btn.title = 'Location blocked — allow location for this site in your browser settings, then tap to retry';
+      } else if (status === 'error') {
+        btn.classList.add('denied');
+        btn.title = 'Could not get your location — tap to retry';
+      } else if (status === 'unsupported') {
+        btn.classList.add('denied');
+        btn.title = 'Geolocation isn\'t available in this browser/context';
+      }
+    }
+
+    function watchGeolocationPermission() {
+      if (!navigator.permissions || !navigator.permissions.query) return;
+      navigator.permissions.query({ name: 'geolocation' }).then(status => {
+        if (status.state === 'denied') setLocateStatus('denied');
+        status.onchange = () => {
+          if (status.state === 'denied') setLocateStatus('denied');
+          if (status.state === 'granted') handleLocateClick();
+        };
+      }).catch(() => { /* not supported in this browser */ });
+    }
+
+    async function handleLocateClick() {
+      setLocateStatus('locating');
+      const coords = await getUserCoordsAsync(true);
+      userCoords = coords;
+      if (map) {
+        map.flyTo({ center: coords, zoom: 13 });
+        if (userMarker) userMarker.remove();
+        userMarker = new mapboxgl.Marker({ color: '#3b82f6' }).setLngLat(coords).addTo(map);
+        updateMapLabelLocation(coords);
+      }
+      loadWeather();
+      const upcoming = allEvents.filter(e => e.status === 'upcoming' || e.status === 'active');
+      if (upcoming.length) drawAllRoutes(upcoming);
+    }
+
+    // forcePrompt=true is used for the manual "locate me" button: it skips the
+    // cached/short-timeout path and asks the browser for a fresh, high-accuracy
+    // fix. Browsers are far more willing to actually surface the permission
+    // prompt (rather than silently failing) when the request follows a real
+    // user click like this, versus firing automatically on page load.
+    function getUserCoordsAsync(forcePrompt = false) {
       return new Promise(resolve => {
-        // instant fallback: last known coords from this session, if any
         const cached = sessionStorage.getItem('lastCoords');
         const fallback = cached ? JSON.parse(cached) : [-80.4117, 25.9234];
 
-        if (!navigator.geolocation) { resolve(fallback); return; }
+        if (!navigator.geolocation) {
+          setLocateStatus('unsupported');
+          resolve(fallback);
+          return;
+        }
+
+        if (!forcePrompt) setLocateStatus('locating');
 
         navigator.geolocation.getCurrentPosition(
           p => {
             const coords = [p.coords.longitude, p.coords.latitude];
             sessionStorage.setItem('lastCoords', JSON.stringify(coords));
+            setLocateStatus('active');
             resolve(coords);
           },
-          () => resolve(fallback),
-          { enableHighAccuracy: false, timeout: 5000, maximumAge: 60000 }
+          err => {
+            // err.code: 1 = PERMISSION_DENIED, 2 = POSITION_UNAVAILABLE, 3 = TIMEOUT
+            setLocateStatus(err.code === 1 ? 'denied' : 'error');
+            resolve(fallback);
+          },
+          { enableHighAccuracy: forcePrompt, timeout: forcePrompt ? 10000 : 6000, maximumAge: forcePrompt ? 0 : 60000 }
         );
       });
     }
@@ -2098,14 +2225,14 @@
       });
     }
 
-    function weatherEmoji(code) {
-      if (code === 0) return '☀️';
-      if (code <= 2) return '⛅';
+    function weatherEmoji(code, isDay = true) {
+      if (code === 0) return isDay ? '☀️' : '🌙';
+      if (code <= 2) return isDay ? '⛅' : '☁️';
       if (code <= 3) return '☁️';
       if (code <= 48) return '🌫️';
       if (code <= 67) return '🌧️';
       if (code <= 77) return '❄️';
-      if (code <= 82) return '🌦️';
+      if (code <= 82) return isDay ? '🌦️' : '🌧️';
       if (code <= 99) return '⛈️';
       return '🌡️';
     }
