@@ -22,8 +22,9 @@ public class EventController {
         String id = UUID.randomUUID().toString();
         String date = (event.date() != null && !event.date().isBlank())
                 ? event.date()
-                : LocalDate.now().toString(); // default to today
-        Event saved = new Event(id, event.title(), event.location(), date, event.startTime(), event.endTime(), event.mode());
+                : LocalDate.now().toString();
+        Event saved = new Event(id, event.title(), event.location(), date,
+                event.startTime(), event.endTime(), event.mode(), event.description());
         events.put(id, saved);
         return EventResponse.from(saved);
     }
@@ -50,7 +51,7 @@ public class EventController {
         if (!events.containsKey(id)) throw new NoSuchElementException("Event not found: " + id);
         Event updated = new Event(id, event.title(), event.location(),
                 event.date() != null && !event.date().isBlank() ? event.date() : LocalDate.now().toString(),
-                event.startTime(), event.endTime(), event.mode());
+                event.startTime(), event.endTime(), event.mode(), event.description());
         events.put(id, updated);
         return EventResponse.from(updated);
     }
