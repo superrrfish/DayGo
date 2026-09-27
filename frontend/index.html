@@ -687,6 +687,7 @@
     }
 
     .nav-btn {
+      position: relative;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -713,9 +714,34 @@
       color: #fff;
     }
 
+    .nav-btn.has-unread .nav-badge {
+      opacity: 1;
+      transform: scale(1);
+    }
+
     .nav-icon {
       font-size: 16px;
       flex-shrink: 0;
+    }
+
+    .nav-badge {
+      position: absolute;
+      top: 6px;
+      right: 8px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #ef4444;
+      color: #fff;
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 18px;
+      text-align: center;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.7);
+      opacity: 0;
+      transform: scale(0.7);
+      transition: opacity var(--transition), transform var(--transition);
     }
 
     #nav-sidebar.collapsed .nav-label {
@@ -1139,6 +1165,9 @@
     }
 
     .notifications-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       margin-bottom: 20px;
     }
 
@@ -1146,6 +1175,30 @@
       margin: 0;
       font-size: 30px;
       letter-spacing: -0.8px;
+    }
+
+    .pending-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .pending-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ef4444;
+      box-shadow: 0 0 8px rgba(239, 68, 68, 0.9);
     }
 
     .notification-list {
@@ -1591,7 +1644,7 @@
         <span class="nav-icon">📅</span><span class="nav-label">Calendar</span>
       </button>
       <button class="nav-btn" id="nav-notifications-btn" onclick="switchView('notifications')" title="Notifications">
-        <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span>
+        <span class="nav-icon">🔔</span><span class="nav-label">Notifications</span><span id="nav-notifications-badge" class="nav-badge" aria-label="Unread notifications">0</span>
       </button>
       <button class="nav-btn" id="nav-settings-btn" onclick="switchView('settings')" title="Settings">
         <span class="nav-icon">⚙️</span><span class="nav-label">Settings</span>
@@ -1704,6 +1757,7 @@
       <div id="notifications-view" style="display:none;">
         <div class="notifications-header">
           <h2>Notifications</h2>
+          <span id="notifications-pending-pill" class="pending-pill" style="display:none;">Pending</span>
         </div>
         <div id="notification-list" class="notification-list"></div>
       </div>
@@ -2295,6 +2349,46 @@
     // --- Sidebar nav (Home / Calendar) ---
     let currentView = 'home';
 
+    const NOTIFICATION_UNREAD_KEY = 'daygo-unread-notifications';
+
+    function getUnreadNotificationCount() {
+      try {
+        const raw = localStorage.getItem(NOTIFICATION_UNREAD_KEY);
+        return raw ? Number(raw) : 0;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function setUnreadNotificationCount(count) {
+      localStorage.setItem(NOTIFICATION_UNREAD_KEY, String(Math.max(0, count)));
+    }
+
+    function updateNotificationTabIndicator() {
+      const badge = document.getElementById('nav-notifications-badge');
+      const button = document.getElementById('nav-notifications-btn');
+      const pendingPill = document.getElementById('notifications-pending-pill');
+      const unreadCount = getUnreadNotificationCount();
+      const hasUnread = unreadCount > 0;
+
+      if (!badge || !button) return;
+
+      badge.textContent = unreadCount > 9 ? '9+' : String(unreadCount || 0);
+      button.classList.toggle('has-unread', hasUnread);
+      badge.style.opacity = hasUnread ? '1' : '0';
+      badge.style.transform = hasUnread ? 'scale(1)' : 'scale(0.7)';
+
+      if (pendingPill) {
+        pendingPill.style.display = hasUnread ? 'inline-flex' : 'none';
+        pendingPill.textContent = unreadCount > 1 ? `${unreadCount} pending` : 'Pending';
+      }
+    }
+
+    function markNotificationsRead() {
+      setUnreadNotificationCount(0);
+      updateNotificationTabIndicator();
+    }
+
     function toggleSidebar() {
       document.getElementById('nav-sidebar').classList.toggle('collapsed');
     }
@@ -2317,7 +2411,10 @@
       document.getElementById('nav-settings-btn').classList.toggle('active', isSettings);
 
       if (isCalendar) renderCalendar();
-      if (isNotifications) renderNotifications();
+      if (isNotifications) {
+        markNotificationsRead();
+        renderNotifications();
+      }
     }
 
     // --- Calendar page ---
@@ -2546,6 +2643,12 @@
         ...notification
       };
       saveNotificationLog([nextEntry, ...entries].slice(0, 50));
+
+      if (currentView !== 'notifications') {
+        setUnreadNotificationCount(getUnreadNotificationCount() + 1);
+      }
+
+      updateNotificationTabIndicator();
       if (currentView === 'notifications') renderNotifications();
     }
 
@@ -2553,6 +2656,11 @@
       const list = document.getElementById('notification-list');
       const settings = getReminderSettings();
       const notifications = getNotificationLog();
+      const unreadCount = getUnreadNotificationCount();
+
+      if (unreadCount > 0 && currentView !== 'notifications') {
+        updateNotificationTabIndicator();
+      }
 
       if (!settings.enabled) {
         list.innerHTML = '<div class="notification-empty">Reminders are off. Turn them on in Settings to receive departure alerts.</div>';
@@ -2571,6 +2679,8 @@
           <span>${new Date(notification.createdAt).toLocaleString([], { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}</span>
         </div>
       `).join('');
+
+      updateNotificationTabIndicator();
     }
 
     function triggerReminderNotification(event, minutesUntil) {
