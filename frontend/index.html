@@ -5,7 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>DayGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=NTR&display=swap" rel="stylesheet">
   <link href="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.css" rel="stylesheet">
   <script src="https://api.mapbox.com/mapbox-gl-js/v3.3.0/mapbox-gl.js"></script>
   <style>
@@ -81,6 +84,7 @@
       font-weight: 700;
       letter-spacing: -0.5px;
       color: var(--text);
+      font-family: 'NTR', 'Inter', sans-serif;
     }
 
     #logo-mark {
@@ -109,7 +113,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: var(--bg);
+      background: var(--bg-page);
       transition: opacity 0.5s ease, visibility 0.5s ease;
     }
 
@@ -142,6 +146,7 @@
       align-items: center;
       justify-content: center;
       gap: 0;
+      font-family: 'NTR', 'Inter', sans-serif;
     }
 
     .loading-wordmark .day-word {
@@ -238,6 +243,8 @@
       bottom: 0;
       display: flex;
       flex-direction: row;
+      border-radius: 0 0 28px 28px;
+      overflow: hidden;
     }
 
     #event-area {
@@ -1311,14 +1318,43 @@
     .notifications-header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 12px;
       margin-bottom: 20px;
+      width: 100%;
     }
 
     .notifications-header h2 {
       margin: 0;
       font-size: 30px;
       letter-spacing: -0.8px;
+    }
+
+    .notifications-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .clear-notifications-btn {
+      appearance: none;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .clear-notifications-btn:hover {
+      border-color: var(--accent);
+      color: var(--text);
+      background: var(--surface2);
     }
 
     .pending-pill {
@@ -2052,7 +2088,10 @@
       <div id="notifications-view" style="display:none;">
         <div class="notifications-header">
           <h2>Notifications</h2>
-          <span id="notifications-pending-pill" class="pending-pill" style="display:none;">Pending</span>
+          <div class="notifications-header-actions">
+            <span id="notifications-pending-pill" class="pending-pill" style="display:none;">Pending</span>
+            <button id="clear-notifications-btn" class="clear-notifications-btn" type="button" onclick="clearAllNotifications()" title="Clear notifications">Clear</button>
+          </div>
         </div>
         <div id="notification-list" class="notification-list"></div>
       </div>
@@ -3071,6 +3110,13 @@
       localStorage.setItem(NOTIFICATION_LOG_KEY, JSON.stringify(entries));
     }
 
+    function clearAllNotifications() {
+      saveNotificationLog([]);
+      setUnreadNotificationCount(0);
+      updateNotificationTabIndicator();
+      renderNotifications();
+    }
+
     function addNotificationItem(notification) {
       const entries = getNotificationLog();
       const nextEntry = {
@@ -3084,6 +3130,19 @@
         setUnreadNotificationCount(getUnreadNotificationCount() + 1);
       }
 
+      updateNotificationTabIndicator();
+      if (currentView === 'notifications') renderNotifications();
+    }
+
+    function clearNotificationsForEvent(eventId, eventTitle = null) {
+      const entries = getNotificationLog().filter(entry => {
+        const matchesEventId = entry.eventId && entry.eventId === eventId;
+        const matchesTitle = eventTitle && entry.eventTitle && entry.eventTitle === eventTitle;
+        return !(matchesEventId || matchesTitle);
+      });
+
+      saveNotificationLog(entries);
+      setUnreadNotificationCount(0);
       updateNotificationTabIndicator();
       if (currentView === 'notifications') renderNotifications();
     }
@@ -3127,7 +3186,12 @@
         new Notification(title, { body: message });
       }
 
-      addNotificationItem({ title, message });
+      addNotificationItem({
+        title,
+        message,
+        eventId: event.id,
+        eventTitle: event.title
+      });
     }
 
     function pollReminderNotifications() {
@@ -3206,6 +3270,10 @@
 
       try {
         await fetch(`${API}/api/events/${targetId}`, { method: 'DELETE' });
+        if (event) {
+          clearNotificationsForEvent(event.id, event.title);
+          if (event.seriesId) clearNotificationsForEvent(event.seriesId, event.title);
+        }
         loadEvents();
       } catch (e) { alert('Failed to delete event.'); }
     }
