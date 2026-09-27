@@ -635,7 +635,7 @@
     }
 
     #map-panel {
-      width: 320px;
+      width: clamp(260px, 32vw, 420px);
       flex-shrink: 0;
       background: var(--surface);
       border-left: 1px solid var(--border);
@@ -650,7 +650,7 @@
     }
 
     #nav-sidebar {
-      width: 180px;
+      width: clamp(150px, 18vw, 180px);
       flex-shrink: 0;
       background: var(--surface);
       border-right: 1px solid var(--border);
@@ -1480,10 +1480,21 @@
       cursor: col-resize;
     }
 
-    @media (max-width: 640px) {
-      :root {
-        --topbar-h: 78px;
-        --card-w: 240px;
+    @media (max-width: 1100px) {
+      #topbar {
+        padding: 0 20px;
+      }
+
+      #logo {
+        font-size: 24px;
+      }
+
+      #weather-widget {
+        font-size: 18px;
+      }
+
+      #weather-temp {
+        font-size: 22px;
       }
 
       #main {
@@ -1498,6 +1509,60 @@
         border-bottom: 1px solid var(--border);
         padding: 10px 16px !important;
         gap: 10px;
+        overflow-x: auto;
+      }
+
+      #nav-toggle {
+        display: none;
+      }
+
+      #nav-sidebar.collapsed .nav-label {
+        display: inline;
+      }
+
+      #content-area {
+        flex: 1;
+        min-height: 0;
+        height: 52vh;
+      }
+
+      #map-panel {
+        width: 100% !important;
+        max-width: 100%;
+        min-width: 0;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        min-height: 260px;
+      }
+
+      #resize-handle {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      :root {
+        --topbar-h: 78px;
+        --card-w: 240px;
+      }
+
+      #topbar {
+        padding: 0 16px;
+      }
+
+      #main {
+        flex-direction: column;
+      }
+
+      #nav-sidebar {
+        width: 100% !important;
+        flex-direction: row;
+        align-items: center;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 10px 12px !important;
+        gap: 8px;
+        overflow-x: auto;
       }
 
       #nav-toggle {
@@ -1509,8 +1574,18 @@
       }
 
       .nav-btn {
-        padding: 8px 14px;
-        font-size: 13px;
+        padding: 8px 12px;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .nav-badge {
+        top: 2px;
+        right: 4px;
+        min-width: 14px;
+        height: 14px;
+        line-height: 14px;
+        font-size: 9px;
       }
 
       #content-area {
@@ -1543,6 +1618,22 @@
 
       .ribbon {
         padding-right: 16px;
+      }
+
+      .event-card {
+        flex-basis: min(220px, calc(100vw - 72px));
+        padding: 16px;
+      }
+
+      .card-title {
+        font-size: 16px;
+      }
+
+      .card-time,
+      .card-location,
+      .card-description,
+      .card-mode {
+        font-size: 12px;
       }
 
       #archive-btn,
@@ -1579,6 +1670,30 @@
         min-width: 0;
         border-left: none;
         border-top: 1px solid var(--border);
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .settings-card {
+        padding: 14px 16px;
+      }
+
+      .settings-card h3 {
+        font-size: 14px;
+      }
+
+      .settings-row {
+        margin-top: 10px;
+        padding-top: 10px;
+      }
+
+      #settings-view,
+      #notifications-view,
+      #calendar-view {
+        padding: 18px 16px 24px;
       }
 
       #create-btn,
