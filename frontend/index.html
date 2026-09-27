@@ -260,6 +260,13 @@
       align-items: flex-start;
       gap: 6px;
       line-height: 1.4;
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .card-location:hover {
+      color: var(--accent);
+      text-decoration: underline;
     }
 
     .card-location svg {
@@ -1285,10 +1292,10 @@
         <div class="card-title">${event.title}</div>
         <div class="card-time">${formatTime12(event.startTime)}${endPart}</div>
         <div class="card-divider"></div>
-        <div class="card-location">
+        <a class="card-location" href="https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.location)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           ${event.location}
-        </div>
+        </a>
         <div class="card-mode"><span class="mode-icon">${modeIcon}</span> ${event.mode}</div>
         <div class="card-dot" style="background: ${color};"></div>
       </div>`;
