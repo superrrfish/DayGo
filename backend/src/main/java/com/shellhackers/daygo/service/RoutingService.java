@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class RoutingService {
 
-    @Value("${ors.api.key}")
-    private String orsApiKey;
+    @Value("${mapbox.api.key}")
+    private String mapboxApiKey;
 
     private final HttpClient http = HttpClient.newHttpClient();
     private final ObjectMapper mapper = new ObjectMapper();
@@ -40,56 +40,56 @@ public class RoutingService {
 
     private double[] geocode(String location) throws Exception {
         String encoded = URLEncoder.encode(location, StandardCharsets.UTF_8);
-        String url = "https://nominatim.openstreetmap.org/search?q=" + encoded + "&format=json&limit=1";
+        String url = "https://api.mapbox.com/geocoding/v5/mapbox.places/" + encoded
+                + ".json?limit=1&access_token=" + mapboxApiKey;
 
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .header("User-Agent", "DayGo/1.0 shellhackers@hackathon")
                 .GET()
                 .build();
 
         HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString());
-        JsonNode arr = mapper.readTree(res.body());
+        JsonNode root = mapper.readTree(res.body());
+        JsonNode features = root.path("features");
 
-        if (arr.isEmpty()) return null;
+        if (features.isEmpty()) return null;
 
-        double lat = arr.get(0).get("lat").asDouble();
-        double lon = arr.get(0).get("lon").asDouble();
-        return new double[]{lon, lat}; // ORS expects [lng, lat]
+        JsonNode coords = features.get(0).path("geometry").path("coordinates");
+        double lon = coords.get(0).asDouble();
+        double lat = coords.get(1).asDouble();
+        return new double[]{lon, lat};
     }
 
     private int fetchTravelMinutes(double[] from, double[] to, TransportMode mode) throws Exception {
+        if (mode == TransportMode.TRANSIT) return fallback(mode);
+
         String profile = switch (mode) {
-            case CAR, RIDESHARE -> "driving-car";
-            case BIKE -> "cycling-regular";
-            case WALK -> "foot-walking";
-            case TRANSIT -> null; // ORS doesn't support transit, fall back
+            case CAR, RIDESHARE -> "driving";
+            case BIKE -> "cycling";
+            case WALK -> "walking";
+            default -> "driving";
         };
 
-        if (profile == null) return fallback(mode);
-
-        String body = String.format(
-                "{\"coordinates\":[[%f,%f],[%f,%f]]}",
-                from[0], from[1], to[0], to[1]
+        String url = String.format(
+                "https://api.mapbox.com/directions/v5/mapbox/%s/%f,%f;%f,%f?access_token=%s",
+                profile, from[0], from[1], to[0], to[1], mapboxApiKey
         );
 
         HttpRequest req = HttpRequest.newBuilder()
-                .uri(URI.create("https://api.openrouteservice.org/v2/directions/" + profile))
-                .header("Authorization", orsApiKey)
-                .header("Content-Type", "application/json")
-                .POST(HttpRequest.BodyPublishers.ofString(body))
+                .uri(URI.create(url))
+                .GET()
                 .build();
 
         HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString());
         JsonNode root = mapper.readTree(res.body());
 
-        // duration is in seconds
-        double seconds = root
-                .path("routes").get(0)
-                .path("summary")
-                .path("duration")
-                .asDouble();
+        JsonNode routes = root.path("routes");
+        if (routes.isEmpty()) {
+            System.err.println("Mapbox returned no routes. Response: " + res.body());
+            return fallback(mode);
+        }
 
+        double seconds = routes.get(0).path("duration").asDouble();
         return (int) Math.ceil(seconds / 60.0);
     }
 
