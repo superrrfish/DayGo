@@ -21,9 +21,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	// removed: implementation 'com.fasterxml.jackson.core:jackson-databind'
-	// backend/build.gradle
-	implementation 'me.paulschwarz:spring-dotenv:5.1.0'
 }
 
 tasks.named('test') {
