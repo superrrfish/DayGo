@@ -211,6 +211,52 @@
       display: none;
     }
 
+    .summary-card {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.12), rgba(16, 185, 129, 0.08));
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      margin-right: 28px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .summary-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--text-muted);
+    }
+
+    .summary-weather-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.12);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .summary-card p {
+      margin: 0;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
     #sections-scroll {
       flex: 1;
       min-height: 0;
@@ -1773,6 +1819,13 @@
             <div class="time" id="leave-time">—</div>
             <div class="event-name" id="leave-event-name"></div>
           </div>
+          <div class="summary-card" id="daily-summary-card">
+            <div class="summary-header">
+              <span class="summary-label">Daily summary</span>
+              <span class="summary-weather-pill" id="summary-weather-pill">—</span>
+            </div>
+            <p id="daily-summary-text">Loading your day…</p>
+          </div>
           <div id="sections-scroll">
             <div class="events-section" id="section-today">
               <div class="ribbon-label">Today's events</div>
@@ -2292,14 +2345,109 @@
       });
     }
 
+    let currentWeather = {
+      temp: null,
+      code: 0,
+      isDay: true,
+      emoji: '☀️'
+    };
+
+    function describeWeatherCode(code) {
+      if (code === 0) return 'clear';
+      if (code <= 2) return 'mostly clear';
+      if (code <= 3) return 'cloudy';
+      if (code <= 48) return 'misty';
+      if (code <= 67) return 'rainy';
+      if (code <= 77) return 'snowy';
+      if (code <= 82) return 'showery';
+      if (code <= 99) return 'stormy';
+      return 'variable';
+    }
+
+    function commuteWeatherNote(code) {
+      if (code <= 2) return 'Commute should be smooth and easy.';
+      if (code <= 3) return 'Clouds may slow things down a bit, but it should still be manageable.';
+      if (code <= 48) return 'Low visibility could make the commute a little slower than usual.';
+      if (code <= 67) return 'Rain is likely, so plan for extra time on the road.';
+      if (code <= 77) return 'Cold conditions may affect travel, so leave a little earlier.';
+      if (code <= 82) return 'A wet commute is likely, so keep buffer time for delays.';
+      if (code <= 99) return 'Stormy weather could disrupt the route, so give yourself extra buffer.';
+      return 'Conditions are variable, so leave a little extra time for the trip.';
+    }
+
+    function generateDailySummary() {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayEvents = (allEvents || [])
+        .filter(e => (e.date || todayStr) === todayStr && (e.status === 'upcoming' || e.status === 'active'))
+        .sort((a, b) => (a.startTime || '00:00').localeCompare(b.startTime || '00:00'));
+
+      const weatherText = currentWeather.temp !== null
+        ? `${currentWeather.temp}°F and ${describeWeatherCode(currentWeather.code)}`
+        : 'weather is updating';
+
+      const summaryEl = document.getElementById('daily-summary-text');
+      const summaryPill = document.getElementById('summary-weather-pill');
+      if (summaryPill) {
+        summaryPill.textContent = currentWeather.temp !== null ? `${currentWeather.emoji} ${currentWeather.temp}°F` : '—';
+      }
+
+      if (!summaryEl) return;
+
+      if (!todayEvents.length) {
+        summaryEl.textContent = currentWeather.temp !== null
+          ? `You’re free today. ${commuteWeatherNote(currentWeather.code)} Keep the day flexible while the weather stays ${describeWeatherCode(currentWeather.code)}.`
+          : 'No events are scheduled today, so your day is open.';
+        return;
+      }
+
+      const formatMinutes = mins => {
+        if (mins < 60) return `${mins} min`;
+        const hours = Math.floor(mins / 60);
+        const minutes = mins % 60;
+        return minutes ? `${hours}h ${minutes}m` : `${hours}h`;
+      };
+
+      const describeGap = (from, to) => {
+        if (!from || !to) return '';
+        const fromMinutes = Number(from.startTime.split(':')[0]) * 60 + Number(from.startTime.split(':')[1]);
+        const toMinutes = Number(to.startTime.split(':')[0]) * 60 + Number(to.startTime.split(':')[1]);
+        const gap = toMinutes - fromMinutes;
+        if (gap <= 0) return '';
+        return ` There’s ${formatMinutes(gap)} between ${from.title} and ${to.title}.`;
+      };
+
+      const count = todayEvents.length;
+      const eventText = count === 1 ? '1 event' : `${count} events`;
+      const firstEvent = todayEvents[0];
+      const nextEvent = todayEvents[1];
+      const firstPlan = `Your first plan is ${firstEvent.title} at ${formatTime12(firstEvent.startTime)}.`;
+      const gapText = nextEvent ? describeGap(firstEvent, nextEvent) : '';
+      const detailText = count > 1
+        ? ` Your day builds from ${firstEvent.title} to ${todayEvents.at(-1).title}, with ${todayEvents.map(e => e.title).slice(0, 3).join(', ')}${count > 3 ? ' and more' : ''} spread through the afternoon.`
+        : '';
+
+      summaryEl.textContent = `You have ${eventText} today with ${weatherText}. ${commuteWeatherNote(currentWeather.code)} ${firstPlan}${gapText}${detailText}`;
+    }
+
     async function loadWeather() {
       try {
         const coords = await getUserCoordsAsync();
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords[1]}&longitude=${coords[0]}&current=temperature_2m,weathercode,is_day&temperature_unit=fahrenheit&timezone=auto`);
         const data = await res.json();
-        document.getElementById('weather-temp').textContent = `${Math.round(data.current.temperature_2m)}°F`;
-        document.getElementById('weather-emoji').textContent = weatherEmoji(data.current.weathercode, data.current.is_day === 1);
-      } catch (e) { console.warn('Weather failed:', e); }
+        const temp = Math.round(data.current.temperature_2m);
+        currentWeather = {
+          temp,
+          code: data.current.weathercode,
+          isDay: data.current.is_day === 1,
+          emoji: weatherEmoji(data.current.weathercode, data.current.is_day === 1)
+        };
+        document.getElementById('weather-temp').textContent = `${temp}°F`;
+        document.getElementById('weather-emoji').textContent = currentWeather.emoji;
+        generateDailySummary();
+      } catch (e) {
+        console.warn('Weather failed:', e);
+        generateDailySummary();
+      }
     }
 
     function setLocateStatus(status) {
@@ -2455,6 +2603,7 @@
       renderArchive(past);
       renderNotifications();
       pollReminderNotifications();
+      generateDailySummary();
 
       if (currentView === 'calendar') {
         renderCalendar();
