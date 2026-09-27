@@ -274,6 +274,17 @@
       margin-top: 1px;
     }
 
+    .card-description {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-top: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
     .card-mode {
       margin-top: 12px;
       display: inline-flex;
@@ -541,7 +552,8 @@
     }
 
     .field input,
-    .field select {
+    .field select,
+    .field textarea {
       width: 100%;
       padding: 10px 14px;
       border-radius: 10px;
@@ -554,8 +566,15 @@
       transition: border-color var(--transition);
     }
 
+    .field textarea {
+      resize: vertical;
+      min-height: 64px;
+      line-height: 1.4;
+    }
+
     .field input:focus,
-    .field select:focus {
+    .field select:focus,
+    .field textarea:focus {
       border-color: var(--accent);
     }
 
@@ -958,6 +977,10 @@
           <option value="BIKE">🚲 Bike</option>
         </select>
       </div>
+      <div class="field">
+        <label>Description (optional)</label>
+        <textarea id="f-description" placeholder="Any notes about this event…"></textarea>
+      </div>
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn-primary" id="modal-submit" onclick="submitEvent()">Add event</button>
@@ -1272,6 +1295,12 @@
       }
     }
 
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
     function buildCard(event, index) {
       const isActive = event.status === 'active';
       const color = EVENT_COLORS[index % EVENT_COLORS.length];
@@ -1282,6 +1311,9 @@
         ? new Date(event.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
         : 'Today';
       const id = event.id;
+      const descriptionHtml = event.description
+        ? `<div class="card-description">${escapeHtml(event.description)}</div>`
+        : '';
       return `
       <div class="event-card ${isActive ? 'active-card' : ''}" style="border-color: ${color}33;">
         <div class="card-accent-bar" style="background: ${color};"></div>
@@ -1301,6 +1333,7 @@
           <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
           ${event.location}
         </a>
+        ${descriptionHtml}
         <div class="card-mode"><span class="mode-icon">${modeIcon}</span> ${event.mode}</div>
         <div class="card-dot" style="background: ${color};"></div>
       </div>`;
@@ -1371,6 +1404,7 @@
       document.getElementById('f-start').value = event.startTime || '';
       document.getElementById('f-end').value = event.endTime || '';
       document.getElementById('f-mode').value = event.mode || 'CAR';
+      document.getElementById('f-description').value = event.description || '';
       selectedLocation = null;
       document.getElementById('autocomplete-results').style.display = 'none';
       document.getElementById('modal-overlay').classList.add('open');
@@ -1384,7 +1418,7 @@
     }
 
     function clearModalFields() {
-      ['f-title', 'f-location', 'f-start', 'f-end', 'f-date'].forEach(id => document.getElementById(id).value = '');
+      ['f-title', 'f-location', 'f-start', 'f-end', 'f-date', 'f-description'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('f-mode').value = 'CAR';
       selectedLocation = null;
     }
@@ -1400,6 +1434,7 @@
       const startTime = document.getElementById('f-start').value;
       const endTime = document.getElementById('f-end').value || null;
       const mode = document.getElementById('f-mode').value;
+      const description = document.getElementById('f-description').value.trim() || null;
 
       if (!title || !location || !startTime) { alert('Title, destination, and start time are required.'); return; }
 
@@ -1408,13 +1443,13 @@
           await fetch(`${API}/api/events/${editingEventId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, location, date, startTime, endTime, mode })
+            body: JSON.stringify({ title, location, date, startTime, endTime, mode, description })
           });
         } else {
           await fetch(`${API}/api/events`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, location, date, startTime, endTime, mode })
+            body: JSON.stringify({ title, location, date, startTime, endTime, mode, description })
           });
         }
         closeModal();

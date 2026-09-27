@@ -9,10 +9,11 @@ public record Event(
         String id,
         String title,
         String location,
-        String date,      // yyyy-MM-dd, defaults to today if null on creation
-        String startTime, // HH:mm
-        String endTime,   // HH:mm, optional
-        TransportMode mode
+        String date,        // yyyy-MM-dd, defaults to today if null on creation
+        String startTime,   // HH:mm
+        String endTime,     // HH:mm, optional
+        TransportMode mode,
+        String description  // optional, may be null
 ) {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");

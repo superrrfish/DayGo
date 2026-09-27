@@ -8,14 +8,16 @@ public record EventResponse(
         String startTime,
         String endTime,
         TransportMode mode,
-        String status
+        String status,
+        String description
 ) {
     public static EventResponse from(Event event) {
         return new EventResponse(
                 event.id(), event.title(), event.location(),
                 event.date(),
                 event.startTime(), event.endTime(), event.mode(),
-                event.status()
+                event.status(),
+                event.description()
         );
     }
 }
