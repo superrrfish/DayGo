@@ -61,13 +61,10 @@ public class RoutingService {
     }
 
     private int fetchTravelMinutes(double[] from, double[] to, TransportMode mode) throws Exception {
-        if (mode == TransportMode.TRANSIT) return fallback(mode);
-
         String profile = switch (mode) {
-            case CAR, RIDESHARE -> "driving";
+            case CAR, TRANSIT -> "driving";
             case BIKE -> "cycling";
             case WALK -> "walking";
-            default -> "driving";
         };
 
         String url = String.format(
@@ -90,13 +87,16 @@ public class RoutingService {
         }
 
         double seconds = routes.get(0).path("duration").asDouble();
-        return (int) Math.ceil(seconds / 60.0);
+        int minutes = (int) Math.ceil(seconds / 60.0);
+
+        return (mode == TransportMode.TRANSIT)
+                ? (int) Math.ceil(minutes * 1.6) + 10
+                : minutes;
     }
 
     private int fallback(TransportMode mode) {
         return switch (mode) {
             case CAR -> 20;
-            case RIDESHARE -> 25;
             case TRANSIT -> 35;
             case BIKE -> 30;
             case WALK -> 50;

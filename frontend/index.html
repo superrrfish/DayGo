@@ -209,8 +209,8 @@
       opacity: 1;
     }
 
-    .event-card.active-card:hover {
-      box-shadow: 0 8px 32px rgba(16, 185, 129, 0.15);
+    .event-card.active-card .card-status {
+      color: #10b981 !important;
     }
 
     .card-accent-bar {
@@ -953,7 +953,6 @@
         <label>Transport</label>
         <select id="f-mode">
           <option value="CAR">🚗 Car</option>
-          <option value="RIDESHARE">🚕 Rideshare</option>
           <option value="TRANSIT">🚌 Transit</option>
           <option value="WALK">🚶 Walk</option>
           <option value="BIKE">🚲 Bike</option>
@@ -1000,6 +999,12 @@
       loadWeather();
       loadEvents();
       setInterval(loadEvents, 30000);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        loadEvents();
+      }
     });
 
     function initMap() {
@@ -1270,7 +1275,7 @@
     function buildCard(event, index) {
       const isActive = event.status === 'active';
       const color = EVENT_COLORS[index % EVENT_COLORS.length];
-      const modeIcon = { CAR: '🚗', RIDESHARE: '🚕', TRANSIT: '🚌', WALK: '🚶', BIKE: '🚲' }[event.mode] || '🚗';
+      const modeIcon = { CAR: '🚗', TRANSIT: '🚌', WALK: '🚶', BIKE: '🚲' }[event.mode] || '🚗';
       const endPart = event.endTime ? `–${formatTime12(event.endTime)}` : '';
       const today = new Date().toISOString().slice(0, 10);
       const dateLabel = event.date && event.date !== today
