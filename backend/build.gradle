@@ -23,7 +23,7 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	// removed: implementation 'com.fasterxml.jackson.core:jackson-databind'
 	// backend/build.gradle
-	implementation 'me.paulschwarz:spring-dotenv:4.2.0'
+	implementation 'me.paulschwarz:spring-dotenv:5.1.0'
 }
 
 tasks.named('test') {
