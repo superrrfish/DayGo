@@ -1982,7 +1982,6 @@
           <div class="summary-card" id="daily-summary-card">
             <div class="summary-header">
               <span class="summary-label">Daily summary</span>
-              <span class="summary-weather-pill" id="summary-weather-pill">—</span>
             </div>
             <p id="daily-summary-text">
               <img id="summary-dawn-doe" class="summary-icon" src="assets/dawn doe light.png" alt="Dawn Doe" />
@@ -2341,6 +2340,16 @@
           localStorage.setItem(DEFAULT_TRANSPORT_KEY, nextMode);
           const modalModeSelect = document.getElementById('f-mode');
           if (modalModeSelect) modalModeSelect.value = nextMode;
+        });
+      }
+
+      const modalModeSelect = document.getElementById('f-mode');
+      if (modalModeSelect) {
+        modalModeSelect.addEventListener('change', (event) => {
+          const nextMode = normalizeTransportMode(event.target.value);
+          localStorage.setItem(DEFAULT_TRANSPORT_KEY, nextMode);
+          const transportSettingSelect = document.getElementById('default-transport');
+          if (transportSettingSelect) transportSettingSelect.value = nextMode;
         });
       }
 
