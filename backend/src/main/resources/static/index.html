@@ -105,7 +105,6 @@
     .card-location { font-size: 12px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
     .card-location svg { flex-shrink: 0; margin-top: 1px; }
     .card-mode { margin-top: 12px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--text-muted); background: var(--surface2); padding: 4px 10px; border-radius: 20px; }
-    /* dot badge on card matching pin color */
     .card-dot {
       position: absolute; bottom: 14px; right: 14px;
       width: 10px; height: 10px; border-radius: 50%;
@@ -326,24 +325,24 @@
     <h2 id="modal-title">New event</h2>
     <div class="field">
       <label>Title</label>
-      <input type="text" id="f-title" placeholder="Doctor appointment">
+      <label for="f-title"></label><input type="text" id="f-title" placeholder="Doctor appointment">
     </div>
     <div class="field">
       <label>Destination</label>
-      <input type="text" id="f-location" placeholder="Start typing an address…" autocomplete="off" oninput="onLocationInput(this.value)">
+      <label for="f-location"></label><input type="text" id="f-location" placeholder="Start typing an address…" autocomplete="off" oninput="onLocationInput(this.value)">
       <div id="autocomplete-results" style="display:none"></div>
     </div>
     <div class="field">
       <label>Date (leave blank for today)</label>
-      <input type="date" id="f-date">
+      <label for="f-date"></label><input type="date" id="f-date">
     </div>
     <div class="field-row">
-      <div class="field"><label>Start time</label><input type="time" id="f-start"></div>
-      <div class="field"><label>End time (optional)</label><input type="time" id="f-end"></div>
+      <div class="field"><label>Start time</label><label for="f-start"></label><input type="time" id="f-start"></div>
+      <div class="field"><label>End time (optional)</label><label for="f-end"></label><input type="time" id="f-end"></div>
     </div>
     <div class="field">
       <label>Transport</label>
-      <select id="f-mode">
+      <label for="f-mode"></label><select id="f-mode">
         <option value="CAR">🚗 Car</option>
         <option value="RIDESHARE">🚕 Rideshare</option>
         <option value="TRANSIT">🚌 Transit</option>
@@ -375,19 +374,12 @@
   let selectedLocation = null;
   let editingEventId = null;
 
-  // track markers and route layers so we can remove them
-  let eventMarkers = [];       // mapboxgl.Marker[]
-  let userMarker = null;       // mapboxgl.Marker
-  let routeLayerIds = [];      // string[]
+  let eventMarkers = [];
+  let userMarker = null;
+  let routeLayerIds = [];
 
-  // color palette for events (index → hex)
   const EVENT_COLORS = [
-    '#f59e0b', // amber
-    '#a855f7', // purple
-    '#ec4899', // pink
-    '#14b8a6', // teal
-    '#f97316', // orange
-    '#6366f1', // indigo
+    '#f59e0b', '#a855f7', '#ec4899', '#14b8a6', '#f97316', '#6366f1',
   ];
 
   const isMobile = () => window.innerWidth <= 640;
@@ -399,8 +391,6 @@
     loadEvents();
     setInterval(loadEvents, 30000);
   });
-
-  // ── Map ──────────────────────────────────────────────────────────────────────
 
   function initMap() {
     map = new mapboxgl.Map({
@@ -429,25 +419,18 @@
     map.setStyle(theme === 'dark'
       ? 'mapbox://styles/mapbox/dark-v11'
       : 'mapbox://styles/mapbox/light-v11');
-    // re-draw routes after style reload
     map.once('style.load', () => drawAllRoutes(allEvents.filter(e => e.status === 'upcoming' || e.status === 'active')));
   }
 
-  // ── Clear map overlays ────────────────────────────────────────────────────────
-
   function clearEventOverlays() {
-    // remove event markers
     eventMarkers.forEach(m => m.remove());
     eventMarkers = [];
-    // remove route layers/sources
     routeLayerIds.forEach(id => {
       if (map.getLayer(id)) map.removeLayer(id);
       if (map.getSource(id)) map.removeSource(id);
     });
     routeLayerIds = [];
   }
-
-  // ── Draw all routes for today's upcoming events ───────────────────────────────
 
   async function drawAllRoutes(upcoming) {
     if (!map.isStyleLoaded()) {
@@ -458,7 +441,6 @@
     clearEventOverlays();
     if (!upcoming.length) return;
 
-    // geocode all destinations
     const geocoded = await Promise.all(upcoming.map(async (e, i) => {
       try {
         const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(e.location)}.json?access_token=${MAPBOX_TOKEN}&limit=1`);
@@ -471,32 +453,24 @@
     const valid = geocoded.filter(Boolean);
     if (!valid.length) return;
 
-    // place colored markers for each event
     valid.forEach(({ coords, color }) => {
       const marker = new mapboxgl.Marker({ color }).setLngLat(coords).addTo(map);
       eventMarkers.push(marker);
     });
 
-    // build waypoint chain: user → event1 → event2 → ...
     const waypoints = userCoords ? [userCoords, ...valid.map(v => v.coords)] : valid.map(v => v.coords);
-
     if (waypoints.length < 2) return;
 
-    // fetch one directions request for the full chain
     try {
       const coordStr = waypoints.map(c => c.join(',')).join(';');
       const res = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${coordStr}?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${coordStr}?geometries=geojson&overview=full&steps=true&access_token=${MAPBOX_TOKEN}`
       );
       const data = await res.json();
       if (!data.routes?.length) return;
 
-      // draw each leg in the color of its destination event
       const legs = data.routes[0].legs;
       legs.forEach((leg, i) => {
-        // leg i goes from waypoint i to waypoint i+1
-        // if userCoords, leg 0 = user→event0 (color from valid[0])
-        // leg 1 = event0→event1 (color from valid[1]), etc.
         const colorIdx = userCoords ? i : i + 1;
         const color = valid[Math.min(colorIdx, valid.length - 1)].color;
         const layerId = `route-leg-${i}`;
@@ -513,15 +487,12 @@
         routeLayerIds.push(layerId);
       });
 
-      // fit bounds to all waypoints
       const bounds = new mapboxgl.LngLatBounds();
       waypoints.forEach(c => bounds.extend(c));
       const padding = isMobile() ? { top: 20, bottom: 60, left: 20, right: 20 } : 40;
       map.fitBounds(bounds, { padding });
     } catch(e) { console.warn('Route failed:', e); }
   }
-
-  // ── Resize ───────────────────────────────────────────────────────────────────
 
   function initResize() {
     const handle = document.getElementById('resize-handle');
@@ -547,8 +518,6 @@
       document.body.classList.remove('resizing');
     });
   }
-
-  // ── Weather ──────────────────────────────────────────────────────────────────
 
   async function loadWeather() {
     try {
@@ -583,8 +552,6 @@
     return '🌡️';
   }
 
-  // ── Time formatting ───────────────────────────────────────────────────────────
-
   function formatTime12(t, withZone = false) {
     if (!t) return t;
     const [h, m] = t.split(':').map(Number);
@@ -593,8 +560,6 @@
     const base = `${h12}:${String(m).padStart(2, '0')} ${period}`;
     return withZone ? `${base} EST` : base;
   }
-
-  // ── Events ───────────────────────────────────────────────────────────────────
 
   async function loadEvents() {
     try {
@@ -630,10 +595,8 @@
     } else {
       ribbon.style.display = 'flex';
       emptyState.style.display = 'none';
-      // pass index so cards know their color
       ribbon.innerHTML = upcoming.map((e, i) => buildCard(e, i)).join('');
       fetchLeaveBy(upcoming[0]);
-      // wait for userCoords if not yet set
       if (userCoords) {
         drawAllRoutes(upcoming);
       } else {
@@ -703,8 +666,6 @@
       </div>`).join('');
   }
 
-  // ── Delete ────────────────────────────────────────────────────────────────────
-
   async function deleteEvent(id) {
     if (!confirm('Delete this event?')) return;
     try {
@@ -712,8 +673,6 @@
       loadEvents();
     } catch(e) { alert('Failed to delete event.'); }
   }
-
-  // ── Modal ────────────────────────────────────────────────────────────────────
 
   function openModal() {
     editingEventId = null;
@@ -786,8 +745,6 @@
     } catch(e) { alert('Failed to save event. Is the server running?'); }
   }
 
-  // ── Autocomplete ─────────────────────────────────────────────────────────────
-
   function onLocationInput(val) {
     clearTimeout(autocompleteTimeout);
     if (val.length < 3) { document.getElementById('autocomplete-results').style.display = 'none'; return; }
@@ -817,12 +774,8 @@
     document.getElementById('autocomplete-results').style.display = 'none';
   }
 
-  // ── Archive ───────────────────────────────────────────────────────────────────
-
   function openArchive()  { document.getElementById('archive-overlay').classList.add('open'); }
   function closeArchive() { document.getElementById('archive-overlay').classList.remove('open'); }
-
-  // ── Theme ────────────────────────────────────────────────────────────────────
 
   function toggleTheme() {
     const html = document.documentElement;
