@@ -42,8 +42,6 @@
       overflow: hidden;
       transition: background var(--transition), color var(--transition);
     }
-
-    /* ── Top bar ── */
     #topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       height: var(--topbar-h);
@@ -55,47 +53,29 @@
     }
     #logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); }
     #logo span { color: var(--accent); }
-    #weather-widget {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 14px; font-weight: 500; color: var(--text);
-    }
+    #weather-widget { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: var(--text); }
     #weather-widget .emoji { font-size: 20px; }
     #weather-temp { font-size: 16px; font-weight: 600; }
-
-    /* ── Desktop: side-by-side ── */
     #main {
       position: fixed;
       top: var(--topbar-h); left: 0; right: 0; bottom: 0;
-      display: flex;
-      flex-direction: row;
+      display: flex; flex-direction: row;
     }
-
-    /* ── Left: event area ── */
     #event-area {
       flex: 1; display: flex; flex-direction: column;
       padding: 28px 0 28px 28px;
-      min-width: 0;
-      overflow: hidden;
+      min-width: 0; overflow: hidden;
     }
-
-    /* ── Leave by hero ── */
-    #leave-by {
-      margin-bottom: 24px;
-      padding-right: 28px;
-      flex-shrink: 0;
-    }
+    #leave-by { margin-bottom: 24px; padding-right: 28px; flex-shrink: 0; }
     #leave-by .label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 4px; }
     #leave-by .time { font-size: 48px; font-weight: 700; line-height: 1; color: var(--accent); letter-spacing: -2px; }
     #leave-by .event-name { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
     #leave-by.hidden { display: none; }
-
-    /* ── Scroll ribbon ── */
     #ribbon-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 14px; padding-right: 28px; flex-shrink: 0; }
     #ribbon {
       display: flex; gap: 16px;
       overflow-x: auto; overflow-y: visible;
-      padding-bottom: 16px;
-      padding-right: 28px;
+      padding-bottom: 16px; padding-right: 28px;
       scroll-snap-type: x mandatory;
       -webkit-overflow-scrolling: touch;
       flex-shrink: 0;
@@ -103,8 +83,6 @@
     #ribbon::-webkit-scrollbar { height: 4px; }
     #ribbon::-webkit-scrollbar-track { background: transparent; }
     #ribbon::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-    /* ── Event card ── */
     .event-card {
       flex: 0 0 var(--card-w);
       background: var(--surface);
@@ -114,25 +92,25 @@
       scroll-snap-align: start;
       cursor: pointer;
       transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
-      position: relative;
-      overflow: hidden;
+      position: relative; overflow: hidden;
     }
-    .event-card:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 8px 32px var(--accent-glow); }
+    .event-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px var(--accent-glow); }
     .event-card:hover .card-actions { opacity: 1; }
-    .event-card.active-card { border-color: var(--active); }
-    .event-card.active-card:hover { border-color: var(--active); box-shadow: 0 0 0 1px var(--active), 0 8px 32px rgba(16,185,129,0.15); }
-    .card-accent-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--upcoming); border-radius: var(--radius) var(--radius) 0 0; }
-    .card-accent-bar.active { background: var(--active); }
-    .card-status { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--upcoming); margin-bottom: 10px; }
-    .card-status.active { color: var(--active); }
+    .event-card.active-card:hover { box-shadow: 0 8px 32px rgba(16,185,129,0.15); }
+    .card-accent-bar { position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius) var(--radius) 0 0; }
+    .card-status { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .card-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .card-time { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; color: var(--text); margin-bottom: 12px; }
     .card-divider { height: 1px; background: var(--border); margin-bottom: 12px; }
     .card-location { font-size: 12px; color: var(--text-muted); display: flex; align-items: flex-start; gap: 6px; line-height: 1.4; }
     .card-location svg { flex-shrink: 0; margin-top: 1px; }
     .card-mode { margin-top: 12px; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: var(--text-muted); background: var(--surface2); padding: 4px 10px; border-radius: 20px; }
-
-    /* ── Card action buttons ── */
+    /* dot badge on card matching pin color */
+    .card-dot {
+      position: absolute; bottom: 14px; right: 14px;
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid var(--surface);
+    }
     .card-actions {
       position: absolute; top: 14px; right: 14px;
       display: flex; gap: 6px;
@@ -141,58 +119,40 @@
     .card-action-btn {
       width: 28px; height: 28px; border-radius: 8px;
       border: 1px solid var(--border);
-      background: var(--surface2);
-      color: var(--text-muted);
+      background: var(--surface2); color: var(--text-muted);
       display: flex; align-items: center; justify-content: center;
       cursor: pointer; font-size: 13px;
       transition: background var(--transition), color var(--transition), border-color var(--transition);
     }
     .card-action-btn:hover { background: var(--surface); color: var(--text); border-color: var(--accent); }
     .card-action-btn.delete:hover { border-color: #ef4444; color: #ef4444; }
-
-    /* ── Empty state ── */
     #empty-state {
       display: none; flex-direction: column; align-items: flex-start; justify-content: center;
       height: 160px; color: var(--text-muted);
     }
     #empty-state .big { font-size: 32px; margin-bottom: 8px; }
     #empty-state p { font-size: 14px; }
-
-    /* ── Archive button ── */
     #archive-btn {
       margin-top: auto; padding-top: 20px; padding-right: 28px;
       display: flex; align-items: center; gap: 8px;
       font-size: 12px; font-weight: 500; color: var(--text-muted);
       background: none; border: none; cursor: pointer;
-      transition: color var(--transition);
-      align-self: flex-start;
+      transition: color var(--transition); align-self: flex-start;
     }
     #archive-btn:hover { color: var(--text); }
-
-    /* ── Resize handle (desktop only) ── */
     #resize-handle {
       width: 6px; flex-shrink: 0;
-      background: transparent;
-      cursor: col-resize;
-      position: relative;
-      transition: background var(--transition);
+      background: transparent; cursor: col-resize; position: relative;
     }
     #resize-handle::after {
       content: '';
       position: absolute; top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       width: 2px; height: 40px;
-      background: var(--border);
-      border-radius: 2px;
+      background: var(--border); border-radius: 2px;
       transition: background var(--transition), height var(--transition);
     }
-    #resize-handle:hover::after,
-    #resize-handle.dragging::after {
-      background: var(--accent);
-      height: 60px;
-    }
-
-    /* ── Right: map panel ── */
+    #resize-handle:hover::after, #resize-handle.dragging::after { background: var(--accent); height: 60px; }
     #map-panel {
       width: 320px; flex-shrink: 0;
       background: var(--surface);
@@ -203,13 +163,10 @@
     #map-label {
       padding: 16px 20px 12px;
       font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted);
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
+      border-bottom: 1px solid var(--border); flex-shrink: 0;
     }
     #map { flex: 1; }
     .mapboxgl-ctrl-bottom-left, .mapboxgl-ctrl-bottom-right { display: none; }
-
-    /* ── Theme toggle ── */
     #theme-toggle {
       position: fixed; bottom: 24px; right: 24px; z-index: 200;
       bottom: calc(24px + env(safe-area-inset-bottom, 0px));
@@ -221,8 +178,6 @@
       transition: background var(--transition), transform var(--transition);
     }
     #theme-toggle:hover { transform: scale(1.08); }
-
-    /* ── Create FAB ── */
     #create-btn {
       position: fixed; bottom: 24px; left: 24px; z-index: 200;
       bottom: calc(24px + env(safe-area-inset-bottom, 0px));
@@ -234,8 +189,6 @@
       transition: transform var(--transition), box-shadow var(--transition);
     }
     #create-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,0.5); }
-
-    /* ── Modal ── */
     #modal-overlay {
       position: fixed; inset: 0; z-index: 300;
       background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
@@ -278,8 +231,6 @@
     .btn-primary { flex: 1; padding: 12px; border-radius: 10px; background: var(--accent); color: #fff; border: none; font-size: 14px; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: opacity var(--transition); }
     .btn-primary:hover { opacity: 0.9; }
     .btn-secondary { padding: 12px 20px; border-radius: 10px; background: var(--surface2); color: var(--text); border: 1px solid var(--border); font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif; cursor: pointer; }
-
-    /* ── Archive drawer ── */
     #archive-overlay {
       position: fixed; inset: 0; z-index: 300;
       background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
@@ -296,87 +247,41 @@
     }
     #archive-overlay.open + #archive-drawer { transform: translateY(0); }
     #archive-drawer h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
-    .archive-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 0; border-bottom: 1px solid var(--border);
-    }
+    .archive-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--border); }
     .archive-item:last-child { border-bottom: none; }
     .archive-item .info .title { font-size: 14px; font-weight: 600; }
     .archive-item .info .meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
     .archive-item .time { font-size: 14px; font-weight: 600; color: var(--text-muted); }
     #archive-close { float: right; background: none; border: none; color: var(--text-muted); font-size: 20px; cursor: pointer; margin-top: -4px; }
     #archive-empty { color: var(--text-muted); font-size: 14px; }
-
-    /* ── Loading spinner ── */
     .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; margin: 40px auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── Mode icons ── */
     .mode-icon { font-size: 13px; }
-
-    /* ── No-select during resize ── */
     body.resizing { user-select: none; cursor: col-resize; }
 
-    /* ── Mobile layout ── */
     @media (max-width: 640px) {
-      :root { --topbar-h: 52px; }
-
-      #main {
-        flex-direction: column;
-      }
-
-      /* event area: top ~65% */
-      #event-area {
-        flex: 0 0 auto;
-        height: 62%;
-        padding: 20px 0 12px 16px;
-        overflow: hidden;
-      }
-
+      :root { --topbar-h: 52px; --card-w: 240px; }
+      #main { flex-direction: column; }
+      #event-area { flex: 0 0 auto; height: 62%; padding: 20px 0 12px 16px; overflow: hidden; }
       #leave-by .time { font-size: 36px; }
       #leave-by { margin-bottom: 16px; padding-right: 16px; }
       #ribbon-label { padding-right: 16px; }
       #ribbon { padding-right: 16px; }
-
-      /* card slightly narrower on mobile */
-      :root { --card-w: 240px; }
-
       #archive-btn { padding-right: 16px; padding-top: 12px; }
-
-      /* hide desktop resize handle */
       #resize-handle { display: none; }
-
-      /* map: bottom ~35%, no label, no border-left */
-      #map-panel {
-        flex: 1;
-        width: 100% !important;
-        max-width: 100%;
-        min-width: 0;
-        border-left: none;
-        border-top: 1px solid var(--border);
-      }
-
+      #map-panel { flex: 1; width: 100% !important; max-width: 100%; min-width: 0; border-left: none; border-top: 1px solid var(--border); }
       #map-label { display: none; }
-
-      /* FABs: nudge up above safe area */
-      #create-btn, #theme-toggle {
-        bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-      }
+      #create-btn, #theme-toggle { bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
       #create-btn { left: 16px; padding: 10px 16px; font-size: 13px; }
       #theme-toggle { right: 16px; width: 40px; height: 40px; font-size: 16px; }
-
-      /* modal full-width on mobile */
       #modal { padding: 24px; border-radius: 16px; }
       .field-row { flex-direction: column; gap: 0; }
-
-      /* card actions always visible on mobile (no hover) */
       .card-actions { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-<!-- Top bar -->
 <div id="topbar">
   <div id="logo">Day<span>Go</span></div>
   <div id="weather-widget">
@@ -385,56 +290,37 @@
   </div>
 </div>
 
-<!-- Main -->
 <div id="main">
   <div id="event-area">
-
-    <!-- Leave by -->
     <div id="leave-by" class="hidden">
       <div class="label">Leave by</div>
       <div class="time" id="leave-time">—</div>
       <div class="event-name" id="leave-event-name"></div>
     </div>
-
-    <!-- Ribbon -->
     <div id="ribbon-label">Today's events</div>
-    <div id="ribbon">
-      <div class="spinner"></div>
-    </div>
-
-    <!-- Empty state -->
+    <div id="ribbon"><div class="spinner"></div></div>
     <div id="empty-state">
       <div class="big">📭</div>
       <p>Nothing coming up. Add an event to get started.</p>
     </div>
-
-    <!-- Archive -->
     <button id="archive-btn" onclick="openArchive()">
       <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3h18v4H3zM5 7v14h14V7"/><line x1="10" y1="11" x2="14" y2="11"/></svg>
       Past events
     </button>
   </div>
-
-  <!-- Resize handle (desktop only) -->
   <div id="resize-handle"></div>
-
-  <!-- Map panel -->
   <div id="map-panel">
     <div id="map-label">Map</div>
     <div id="map"></div>
   </div>
 </div>
 
-<!-- Theme toggle -->
 <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme">🌙</button>
-
-<!-- Create FAB -->
 <button id="create-btn" onclick="openModal()">
   <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
   New event
 </button>
 
-<!-- Create / Edit modal -->
 <div id="modal-overlay" onclick="handleOverlayClick(event)">
   <div id="modal">
     <h2 id="modal-title">New event</h2>
@@ -452,14 +338,8 @@
       <input type="date" id="f-date">
     </div>
     <div class="field-row">
-      <div class="field">
-        <label>Start time</label>
-        <input type="time" id="f-start">
-      </div>
-      <div class="field">
-        <label>End time (optional)</label>
-        <input type="time" id="f-end">
-      </div>
+      <div class="field"><label>Start time</label><input type="time" id="f-start"></div>
+      <div class="field"><label>End time (optional)</label><input type="time" id="f-end"></div>
     </div>
     <div class="field">
       <label>Transport</label>
@@ -478,7 +358,6 @@
   </div>
 </div>
 
-<!-- Archive -->
 <div id="archive-overlay" onclick="closeArchive()"></div>
 <div id="archive-drawer">
   <button id="archive-close" onclick="closeArchive()">✕</button>
@@ -495,6 +374,21 @@
   let allEvents = [], autocompleteTimeout = null;
   let selectedLocation = null;
   let editingEventId = null;
+
+  // track markers and route layers so we can remove them
+  let eventMarkers = [];       // mapboxgl.Marker[]
+  let userMarker = null;       // mapboxgl.Marker
+  let routeLayerIds = [];      // string[]
+
+  // color palette for events (index → hex)
+  const EVENT_COLORS = [
+    '#f59e0b', // amber
+    '#a855f7', // purple
+    '#ec4899', // pink
+    '#14b8a6', // teal
+    '#f97316', // orange
+    '#6366f1', // indigo
+  ];
 
   const isMobile = () => window.innerWidth <= 640;
 
@@ -525,7 +419,8 @@
     getUserCoordsAsync().then(coords => {
       userCoords = coords;
       map.flyTo({ center: coords, zoom: 13 });
-      new mapboxgl.Marker({ color: '#3b82f6' }).setLngLat(coords).addTo(map);
+      if (userMarker) userMarker.remove();
+      userMarker = new mapboxgl.Marker({ color: '#3b82f6' }).setLngLat(coords).addTo(map);
     });
   }
 
@@ -534,55 +429,99 @@
     map.setStyle(theme === 'dark'
       ? 'mapbox://styles/mapbox/dark-v11'
       : 'mapbox://styles/mapbox/light-v11');
+    // re-draw routes after style reload
+    map.once('style.load', () => drawAllRoutes(allEvents.filter(e => e.status === 'upcoming' || e.status === 'active')));
   }
 
-  async function showRoute(destination) {
-    if (!userCoords) {
-      // wait a moment for geolocation then retry
-      setTimeout(() => showRoute(destination), 800);
+  // ── Clear map overlays ────────────────────────────────────────────────────────
+
+  function clearEventOverlays() {
+    // remove event markers
+    eventMarkers.forEach(m => m.remove());
+    eventMarkers = [];
+    // remove route layers/sources
+    routeLayerIds.forEach(id => {
+      if (map.getLayer(id)) map.removeLayer(id);
+      if (map.getSource(id)) map.removeSource(id);
+    });
+    routeLayerIds = [];
+  }
+
+  // ── Draw all routes for today's upcoming events ───────────────────────────────
+
+  async function drawAllRoutes(upcoming) {
+    if (!map.isStyleLoaded()) {
+      map.once('style.load', () => drawAllRoutes(upcoming));
       return;
     }
+
+    clearEventOverlays();
+    if (!upcoming.length) return;
+
+    // geocode all destinations
+    const geocoded = await Promise.all(upcoming.map(async (e, i) => {
+      try {
+        const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(e.location)}.json?access_token=${MAPBOX_TOKEN}&limit=1`);
+        const data = await res.json();
+        if (!data.features.length) return null;
+        return { coords: data.features[0].center, color: EVENT_COLORS[i % EVENT_COLORS.length], event: e };
+      } catch { return null; }
+    }));
+
+    const valid = geocoded.filter(Boolean);
+    if (!valid.length) return;
+
+    // place colored markers for each event
+    valid.forEach(({ coords, color }) => {
+      const marker = new mapboxgl.Marker({ color }).setLngLat(coords).addTo(map);
+      eventMarkers.push(marker);
+    });
+
+    // build waypoint chain: user → event1 → event2 → ...
+    const waypoints = userCoords ? [userCoords, ...valid.map(v => v.coords)] : valid.map(v => v.coords);
+
+    if (waypoints.length < 2) return;
+
+    // fetch one directions request for the full chain
     try {
-      const geo = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(destination)}.json?access_token=${MAPBOX_TOKEN}&limit=1`);
-      const geoData = await geo.json();
-      if (!geoData.features.length) return;
-      const destCoords = geoData.features[0].center;
-
-      const routeRes = await fetch(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${userCoords[0]},${userCoords[1]};${destCoords[0]},${destCoords[1]}?geometries=geojson&access_token=${MAPBOX_TOKEN}`
+      const coordStr = waypoints.map(c => c.join(',')).join(';');
+      const res = await fetch(
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${coordStr}?geometries=geojson&overview=full&access_token=${MAPBOX_TOKEN}`
       );
-      const routeData = await routeRes.json();
-      if (!routeData.routes.length) return;
+      const data = await res.json();
+      if (!data.routes?.length) return;
 
-      const geojson = { type: 'Feature', geometry: routeData.routes[0].geometry };
+      // draw each leg in the color of its destination event
+      const legs = data.routes[0].legs;
+      legs.forEach((leg, i) => {
+        // leg i goes from waypoint i to waypoint i+1
+        // if userCoords, leg 0 = user→event0 (color from valid[0])
+        // leg 1 = event0→event1 (color from valid[1]), etc.
+        const colorIdx = userCoords ? i : i + 1;
+        const color = valid[Math.min(colorIdx, valid.length - 1)].color;
+        const layerId = `route-leg-${i}`;
 
-      if (map.isStyleLoaded()) {
-        addRouteToMap(geojson);
-      } else {
-        map.once('style.load', () => addRouteToMap(geojson));
-      }
+        if (map.getLayer(layerId)) { map.removeLayer(layerId); map.removeSource(layerId); }
+        map.addSource(layerId, { type: 'geojson', data: { type: 'Feature', geometry: leg.steps.reduce((acc, s) => {
+          acc.coordinates.push(...s.geometry.coordinates);
+          return acc;
+        }, { type: 'LineString', coordinates: [] }) }});
+        map.addLayer({ id: layerId, type: 'line', source: layerId,
+          layout: { 'line-join': 'round', 'line-cap': 'round' },
+          paint: { 'line-color': color, 'line-width': 4, 'line-opacity': 0.85 }
+        });
+        routeLayerIds.push(layerId);
+      });
 
-      new mapboxgl.Marker({ color: '#ef4444' }).setLngLat(destCoords).addTo(map);
+      // fit bounds to all waypoints
       const bounds = new mapboxgl.LngLatBounds();
-      routeData.routes[0].geometry.coordinates.forEach(c => bounds.extend(c));
-      // on mobile give more padding at bottom so route isn't under FABs
-      const padding = isMobile()
-        ? { top: 20, bottom: 60, left: 20, right: 20 }
-        : 40;
+      waypoints.forEach(c => bounds.extend(c));
+      const padding = isMobile() ? { top: 20, bottom: 60, left: 20, right: 20 } : 40;
       map.fitBounds(bounds, { padding });
     } catch(e) { console.warn('Route failed:', e); }
   }
 
-  function addRouteToMap(geojson) {
-    if (map.getLayer('route')) { map.removeLayer('route'); map.removeSource('route'); }
-    map.addSource('route', { type: 'geojson', data: geojson });
-    map.addLayer({ id: 'route', type: 'line', source: 'route',
-      layout: { 'line-join': 'round', 'line-cap': 'round' },
-      paint: { 'line-color': '#3b82f6', 'line-width': 4, 'line-opacity': 0.85 }
-    });
-  }
-
-  // ── Resize (desktop only) ────────────────────────────────────────────────────
+  // ── Resize ───────────────────────────────────────────────────────────────────
 
   function initResize() {
     const handle = document.getElementById('resize-handle');
@@ -591,21 +530,16 @@
 
     handle.addEventListener('mousedown', e => {
       if (isMobile()) return;
-      dragging = true;
-      startX = e.clientX;
-      startW = panel.offsetWidth;
+      dragging = true; startX = e.clientX; startW = panel.offsetWidth;
       handle.classList.add('dragging');
       document.body.classList.add('resizing');
     });
-
     document.addEventListener('mousemove', e => {
       if (!dragging) return;
-      const delta = startX - e.clientX;
-      const newW = Math.min(Math.max(startW + delta, 200), window.innerWidth * 0.6);
+      const newW = Math.min(Math.max(startW + (startX - e.clientX), 200), window.innerWidth * 0.6);
       panel.style.width = newW + 'px';
       map.resize();
     });
-
     document.addEventListener('mouseup', () => {
       if (!dragging) return;
       dragging = false;
@@ -621,10 +555,8 @@
       const coords = await getUserCoordsAsync();
       const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${coords[1]}&longitude=${coords[0]}&current=temperature_2m,weathercode&temperature_unit=fahrenheit&timezone=auto`);
       const data = await res.json();
-      const temp = Math.round(data.current.temperature_2m);
-      const code = data.current.weathercode;
-      document.getElementById('weather-temp').textContent = `${temp}°F`;
-      document.getElementById('weather-emoji').textContent = weatherEmoji(code);
+      document.getElementById('weather-temp').textContent = `${Math.round(data.current.temperature_2m)}°F`;
+      document.getElementById('weather-emoji').textContent = weatherEmoji(data.current.weathercode);
     } catch(e) { console.warn('Weather failed:', e); }
   }
 
@@ -694,12 +626,19 @@
       ribbon.style.display = 'none';
       emptyState.style.display = 'flex';
       leaveBy.classList.add('hidden');
+      clearEventOverlays();
     } else {
       ribbon.style.display = 'flex';
       emptyState.style.display = 'none';
-      ribbon.innerHTML = upcoming.map((e, i) => buildCard(e, i === 0)).join('');
+      // pass index so cards know their color
+      ribbon.innerHTML = upcoming.map((e, i) => buildCard(e, i)).join('');
       fetchLeaveBy(upcoming[0]);
-      showRoute(upcoming[0].location);
+      // wait for userCoords if not yet set
+      if (userCoords) {
+        drawAllRoutes(upcoming);
+      } else {
+        setTimeout(() => drawAllRoutes(upcoming), 900);
+      }
     }
 
     renderArchive(past);
@@ -717,8 +656,9 @@
     }
   }
 
-  function buildCard(event, isFirst) {
+  function buildCard(event, index) {
     const isActive = event.status === 'active';
+    const color    = EVENT_COLORS[index % EVENT_COLORS.length];
     const modeIcon = { CAR:'🚗', RIDESHARE:'🚕', TRANSIT:'🚌', WALK:'🚶', BIKE:'🚲' }[event.mode] || '🚗';
     const endPart  = event.endTime ? `–${formatTime12(event.endTime)}` : '';
     const today    = new Date().toISOString().slice(0,10);
@@ -727,8 +667,8 @@
       : 'Today';
     const id = event.id;
     return `
-      <div class="event-card ${isActive ? 'active-card' : ''}">
-        <div class="card-accent-bar ${isActive ? 'active' : ''}"></div>
+      <div class="event-card ${isActive ? 'active-card' : ''}" style="border-color: ${color}33;">
+        <div class="card-accent-bar" style="background: ${color};"></div>
         <div class="card-actions">
           <button class="card-action-btn" onclick="openEditModal('${id}')" title="Edit">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -737,7 +677,7 @@
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
           </button>
         </div>
-        <div class="card-status ${isActive ? 'active' : ''}">${isActive ? 'Active' : 'Upcoming'} · ${dateLabel}</div>
+        <div class="card-status" style="color: ${color};">${isActive ? 'Active' : 'Upcoming'} · ${dateLabel}</div>
         <div class="card-title">${event.title}</div>
         <div class="card-time">${formatTime12(event.startTime)}${endPart}</div>
         <div class="card-divider"></div>
@@ -746,15 +686,13 @@
           ${event.location}
         </div>
         <div class="card-mode"><span class="mode-icon">${modeIcon}</span> ${event.mode}</div>
+        <div class="card-dot" style="background: ${color};"></div>
       </div>`;
   }
 
   function renderArchive(past) {
     const list = document.getElementById('archive-list');
-    if (past.length === 0) {
-      list.innerHTML = '<p id="archive-empty">No past events yet.</p>';
-      return;
-    }
+    if (past.length === 0) { list.innerHTML = '<p id="archive-empty">No past events yet.</p>'; return; }
     list.innerHTML = past.map(e => `
       <div class="archive-item">
         <div class="info">
@@ -775,7 +713,7 @@
     } catch(e) { alert('Failed to delete event.'); }
   }
 
-  // ── Create / Edit modal ───────────────────────────────────────────────────────
+  // ── Modal ────────────────────────────────────────────────────────────────────
 
   function openModal() {
     editingEventId = null;
@@ -827,10 +765,7 @@
     const endTime   = document.getElementById('f-end').value || null;
     const mode      = document.getElementById('f-mode').value;
 
-    if (!title || !location || !startTime) {
-      alert('Title, destination, and start time are required.');
-      return;
-    }
+    if (!title || !location || !startTime) { alert('Title, destination, and start time are required.'); return; }
 
     try {
       if (editingEventId) {
@@ -861,11 +796,8 @@
 
   async function fetchAutocomplete(query) {
     try {
-      const res = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=us`
-      );
-      const data = await res.json();
-      showAutocomplete(data.features);
+      const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${MAPBOX_TOKEN}&autocomplete=true&limit=5&country=us`);
+      showAutocomplete((await res.json()).features);
     } catch(e) {}
   }
 
