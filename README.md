@@ -77,6 +77,7 @@ Open `frontend/index.html` in a browser (or serve it with any static file server
 ## Roadmap
 
 - Persistent storage for events (currently in-memory)
+- Deeper calendar sync to pull from an external calendar
 
 ## Team
 
