@@ -607,11 +607,12 @@
     }
 
     #resize-handle {
-      width: 6px;
+      width: clamp(10px, 1vw, 18px);
       flex-shrink: 0;
       background: transparent;
       cursor: col-resize;
       position: relative;
+      margin: 0 clamp(8px, 0.8vw, 16px);
     }
 
     #resize-handle::after {
