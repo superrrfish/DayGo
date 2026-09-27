@@ -345,24 +345,27 @@
     }
 
     #archive-btn {
-      margin-top: auto;
-      padding-top: 20px;
-      padding-right: 28px;
+      position: fixed;
+      left: 24px;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px) + 56px);
+      z-index: 200;
       display: flex;
       align-items: center;
       gap: 8px;
       font-size: 12px;
       font-weight: 500;
       color: var(--text-muted);
-      background: none;
-      border: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 30px;
       cursor: pointer;
-      transition: color var(--transition);
-      align-self: flex-start;
+      transition: color var(--transition), background var(--transition);
     }
 
     #archive-btn:hover {
       color: var(--text);
+      background: var(--surface2);
     }
 
     #resize-handle {
@@ -644,7 +647,6 @@
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
       z-index: 400;
       background: var(--surface);
       border-top: 1px solid var(--border);
@@ -655,6 +657,7 @@
       overflow-y: auto;
       transform: translateY(100%);
       transition: transform var(--transition);
+      width: 100%;
     }
 
     #archive-overlay.open+#archive-drawer {
@@ -709,6 +712,43 @@
     #archive-empty {
       color: var(--text-muted);
       font-size: 14px;
+    }
+
+    #archive-clear-btn {
+      display: block;
+      margin: -8px 0 16px auto;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: color var(--transition), border-color var(--transition);
+    }
+
+    #archive-clear-btn:hover {
+      color: #ef4444;
+      border-color: #ef4444;
+    }
+
+    .archive-item-remove {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      cursor: pointer;
+      margin-left: 10px;
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .archive-item-remove:hover {
+      color: #ef4444;
+      background: var(--surface2);
     }
 
     .spinner {
@@ -771,8 +811,13 @@
       }
 
       #archive-btn {
+        position: static;
+        background: none;
+        border: none;
         padding-right: 16px;
         padding-top: 12px;
+        border-radius: 0;
+        align-self: flex-start;
       }
 
       #resize-handle {
@@ -918,6 +963,7 @@
 <div id="archive-drawer">
   <button id="archive-close" onclick="closeArchive()">✕</button>
   <h2>Past events</h2>
+  <button id="archive-clear-btn" onclick="clearAllPastEvents()">Clear all</button>
   <div id="archive-list"></div>
 </div>
 
@@ -1088,6 +1134,7 @@
       const newW = Math.min(Math.max(startW + (startX - e.clientX), 200), window.innerWidth * 0.6);
       panel.style.width = newW + 'px';
       map.resize();
+      syncArchiveDrawerWidth();
     });
     document.addEventListener('mouseup', () => {
       if (!dragging) return;
@@ -1249,15 +1296,39 @@
 
   function renderArchive(past) {
     const list = document.getElementById('archive-list');
-    if (past.length === 0) { list.innerHTML = '<p id="archive-empty">No past events yet.</p>'; return; }
+    const clearBtn = document.getElementById('archive-clear-btn');
+    if (past.length === 0) {
+      list.innerHTML = '<p id="archive-empty">No past events yet.</p>';
+      clearBtn.style.display = 'none';
+      return;
+    }
+    clearBtn.style.display = 'block';
     list.innerHTML = past.map(e => `
-    <div class="archive-item">
-      <div class="info">
-        <div class="title">${e.title}</div>
-        <div class="meta">${e.location}</div>
-      </div>
-      <div class="time">${formatTime12(e.startTime)}</div>
-    </div>`).join('');
+  <div class="archive-item">
+    <div class="info">
+      <div class="title">${e.title}</div>
+      <div class="meta">${e.location}</div>
+    </div>
+    <div class="time">${formatTime12(e.startTime)}</div>
+    <button class="archive-item-remove" onclick="deletePastEvent('${e.id}')" title="Remove">✕</button>
+  </div>`).join('');
+  }
+
+  async function deletePastEvent(id) {
+    try {
+      await fetch(`${API}/api/events/${id}`, { method: 'DELETE' });
+      loadEvents();
+    } catch (e) { alert('Failed to remove event.'); }
+  }
+
+  async function clearAllPastEvents() {
+    const past = allEvents.filter(e => e.status === 'past');
+    if (!past.length) return;
+    if (!confirm(`Delete all ${past.length} past events?`)) return;
+    try {
+      await Promise.all(past.map(e => fetch(`${API}/api/events/${e.id}`, { method: 'DELETE' })));
+      loadEvents();
+    } catch (e) { alert('Failed to clear past events.'); }
   }
 
   async function deleteEvent(id) {
@@ -1368,7 +1439,22 @@
     document.getElementById('autocomplete-results').style.display = 'none';
   }
 
-  function openArchive() { document.getElementById('archive-overlay').classList.add('open'); }
+  function openArchive() {
+    syncArchiveDrawerWidth();
+    document.getElementById('archive-overlay').classList.add('open');
+  }
+
+  function syncArchiveDrawerWidth() {
+    const drawer = document.getElementById('archive-drawer');
+    if (isMobile()) {
+      drawer.style.width = '';
+    } else {
+      const eventArea = document.getElementById('event-area');
+      drawer.style.width = eventArea.getBoundingClientRect().width + 'px';
+    }
+  }
+
+  window.addEventListener('resize', syncArchiveDrawerWidth);
   function closeArchive() { document.getElementById('archive-overlay').classList.remove('open'); }
 
   function toggleTheme() {
