@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleBadJson(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(Map.of("error", "Malformed or missing fields in request body. Check destination, arrivalTime, and mode."));
+                .body(Map.of("error", String.valueOf(ex.getCause() != null ? ex.getCause().getMessage() : ex.getMessage())));
     }
 
     @ExceptionHandler(Exception.class)

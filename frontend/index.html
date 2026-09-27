@@ -151,7 +151,36 @@
       display: none;
     }
 
-    #ribbon-label {
+    #sections-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    #sections-scroll::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    #sections-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    #sections-scroll::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    .events-section {
+      flex-shrink: 0;
+      margin-bottom: 28px;
+    }
+
+    .events-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .ribbon-label {
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
@@ -162,7 +191,7 @@
       flex-shrink: 0;
     }
 
-    #ribbon {
+    .ribbon {
       display: flex;
       gap: 16px;
       overflow-x: auto;
@@ -174,15 +203,15 @@
       flex-shrink: 0;
     }
 
-    #ribbon::-webkit-scrollbar {
+    .ribbon::-webkit-scrollbar {
       height: 4px;
     }
 
-    #ribbon::-webkit-scrollbar-track {
+    .ribbon::-webkit-scrollbar-track {
       background: transparent;
     }
 
-    #ribbon::-webkit-scrollbar-thumb {
+    .ribbon::-webkit-scrollbar-thumb {
       background: var(--border);
       border-radius: 4px;
     }
@@ -280,9 +309,47 @@
       line-height: 1.4;
       margin-top: 10px;
       display: -webkit-box;
+      line-clamp: 2;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+    }
+
+    .day-toggle-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .day-chip {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+    }
+
+    .day-chip.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    #f-repeat-note {
+      display: none;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.4;
     }
 
     .card-mode {
@@ -344,22 +411,115 @@
       color: #ef4444;
     }
 
-    #empty-state {
+    .empty-state {
       display: none;
       flex-direction: column;
       align-items: flex-start;
       justify-content: center;
-      height: 160px;
+      height: 120px;
       color: var(--text-muted);
     }
 
-    #empty-state .big {
-      font-size: 32px;
+    .empty-state .big {
+      font-size: 28px;
       margin-bottom: 8px;
     }
 
-    #empty-state p {
+    .empty-state p {
       font-size: 14px;
+    }
+
+    #import-btn {
+      position: fixed;
+      left: 24px;
+      bottom: calc(24px + env(safe-area-inset-bottom, 0px) + 104px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 10px 16px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: color var(--transition), background var(--transition);
+    }
+
+    #import-btn:hover {
+      color: var(--text);
+      background: var(--surface2);
+    }
+
+    #import-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+
+    #import-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    #import-modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      width: 520px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(16px);
+      transition: transform var(--transition);
+    }
+
+    #import-overlay.open #import-modal {
+      transform: translateY(0);
+    }
+
+    #import-modal h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    #import-modal p.hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    #import-json {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-family: 'SFMono-Regular', Consolas, monospace;
+      outline: none;
+      resize: vertical;
+      min-height: 220px;
+      line-height: 1.5;
+      transition: border-color var(--transition);
+    }
+
+    #import-json:focus {
+      border-color: var(--accent);
     }
 
     #archive-btn {
@@ -828,15 +988,16 @@
         padding-right: 16px;
       }
 
-      #ribbon-label {
+      .ribbon-label {
         padding-right: 16px;
       }
 
-      #ribbon {
+      .ribbon {
         padding-right: 16px;
       }
 
-      #archive-btn {
+      #archive-btn,
+      #import-btn {
         position: static;
         background: none;
         border: none;
@@ -915,14 +1076,42 @@
         <div class="time" id="leave-time">—</div>
         <div class="event-name" id="leave-event-name"></div>
       </div>
-      <div id="ribbon-label">Today's events</div>
-      <div id="ribbon">
-        <div class="spinner"></div>
+      <div id="sections-scroll">
+        <div class="events-section" id="section-today">
+          <div class="ribbon-label">Today's events</div>
+          <div class="ribbon" id="ribbon-today">
+            <div class="spinner"></div>
+          </div>
+          <div class="empty-state" id="empty-state-today">
+            <div class="big">📭</div>
+            <p>Nothing coming up. Add an event to get started.</p>
+          </div>
+        </div>
+        <div class="events-section" id="section-week">
+          <div class="ribbon-label">This week</div>
+          <div class="ribbon" id="ribbon-week"></div>
+          <div class="empty-state" id="empty-state-week">
+            <div class="big">📭</div>
+            <p>Nothing else this week.</p>
+          </div>
+        </div>
+        <div class="events-section" id="section-month">
+          <div class="ribbon-label">This month</div>
+          <div class="ribbon" id="ribbon-month"></div>
+          <div class="empty-state" id="empty-state-month">
+            <div class="big">📭</div>
+            <p>Nothing else this month.</p>
+          </div>
+        </div>
       </div>
-      <div id="empty-state">
-        <div class="big">📭</div>
-        <p>Nothing coming up. Add an event to get started.</p>
-      </div>
+      <button id="import-btn" onclick="openImportModal()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="17 8 12 3 7 8" />
+          <line x1="12" y1="3" x2="12" y2="15" />
+        </svg>
+        Import JSON
+      </button>
       <button id="archive-btn" onclick="openArchive()">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path d="M3 3h18v4H3zM5 7v14h14V7" />
@@ -968,6 +1157,23 @@
         <div class="field"><label>Start time</label><input type="time" id="f-start"></div>
         <div class="field"><label>End time (optional)</label><input type="time" id="f-end"></div>
       </div>
+      <div class="field" id="f-repeat-field-wrap">
+        <label>Repeat</label>
+        <select id="f-repeat" onchange="onRepeatChange()">
+          <option value="">Does not repeat</option>
+          <option value="DAILY">Daily</option>
+          <option value="WEEKLY">Weekly</option>
+          <option value="MONTHLY">Monthly</option>
+        </select>
+        <div id="f-repeat-days-field" style="display:none; margin-top:10px;">
+          <div id="f-repeat-days" class="day-toggle-row"></div>
+        </div>
+        <div class="field-row" id="f-repeat-extra-field" style="display:none; margin-top:10px;">
+          <div class="field"><label>Every</label><input type="number" id="f-repeat-interval" min="1" value="1"></div>
+          <div class="field"><label>Ends (optional)</label><input type="date" id="f-repeat-until"></div>
+        </div>
+      </div>
+      <p id="f-repeat-note">Part of a repeating series — this change applies to just this event.</p>
       <div class="field">
         <label>Transport</label>
         <select id="f-mode">
@@ -984,6 +1190,32 @@
       <div class="modal-actions">
         <button class="btn-secondary" onclick="closeModal()">Cancel</button>
         <button class="btn-primary" id="modal-submit" onclick="submitEvent()">Add event</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="import-overlay" onclick="handleImportOverlayClick(event)">
+    <div id="import-modal">
+      <h2>Import events (JSON)</h2>
+      <p class="hint">Paste a single event object or an array of them — same shape the app sends when creating an event (title, location, date, startTime, endTime, mode, description, recurrence).</p>
+      <textarea id="import-json" spellcheck="false" placeholder='[
+  {
+    "title": "Calculus",
+    "location": "Tamiami, Miami, FL",
+    "startTime": "14:00",
+    "endTime": "15:40",
+    "mode": "CAR",
+    "recurrence": {
+      "frequency": "WEEKLY",
+      "daysOfWeek": ["TUESDAY", "THURSDAY"],
+      "interval": 1,
+      "until": null
+    }
+  }
+]'></textarea>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeImportModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitImport()">Import</button>
       </div>
     </div>
   </div>
@@ -1005,6 +1237,16 @@
     let allEvents = [], autocompleteTimeout = null;
     let selectedLocation = null;
     let editingEventId = null;
+    let editingRecurringOccurrence = false;
+    let editingIsSeriesEdit = false;
+    let selectedRepeatDays = new Set();
+
+    const DAY_OPTIONS = [
+      { value: 'MONDAY', label: 'M' }, { value: 'TUESDAY', label: 'T' },
+      { value: 'WEDNESDAY', label: 'W' }, { value: 'THURSDAY', label: 'T' },
+      { value: 'FRIDAY', label: 'F' }, { value: 'SATURDAY', label: 'S' },
+      { value: 'SUNDAY', label: 'S' }
+    ];
 
     let eventMarkers = [];
     let userMarker = null;
@@ -1247,7 +1489,7 @@
         allEvents = await res.json();
         renderEvents();
       } catch (e) {
-        document.getElementById('ribbon').innerHTML = '<p style="color:var(--text-muted);font-size:13px">Could not reach server.</p>';
+        document.getElementById('ribbon-today').innerHTML = '<p style="color:var(--text-muted);font-size:13px">Could not reach server.</p>';
       }
     }
 
@@ -1262,25 +1504,67 @@
       const past = allEvents.filter(e => e.status === 'past')
         .sort((a, b) => toMinutes(b.startTime) - toMinutes(a.startTime));
 
-      const ribbon = document.getElementById('ribbon');
-      const emptyState = document.getElementById('empty-state');
-      const leaveBy = document.getElementById('leave-by');
+      // Split the same "upcoming" list into today / rest-of-week / rest-of-month buckets,
+      // each rendered with the same card ribbon layout.
+      const buckets = categorizeByDate(upcoming);
+      renderRibbon('today', buckets.today);
+      renderRibbon('week', buckets.week);
+      renderRibbon('month', buckets.month);
 
+      const leaveBy = document.getElementById('leave-by');
       if (upcoming.length === 0) {
-        ribbon.innerHTML = '';
-        ribbon.style.display = 'none';
-        emptyState.style.display = 'flex';
         leaveBy.classList.add('hidden');
         clearEventOverlays();
       } else {
-        ribbon.style.display = 'flex';
-        emptyState.style.display = 'none';
-        ribbon.innerHTML = upcoming.map((e, i) => buildCard(e, i)).join('');
         fetchLeaveBy(upcoming[0]);
         waitForUserCoords().then(() => drawAllRoutes(upcoming));
       }
 
       renderArchive(past);
+    }
+
+    // Buckets an already-sorted list of events into "today", "rest of this week"
+    // (rolling 7-day window starting today) and "rest of this month" (rolling
+    // 30-day window starting today). Both are rolling windows rather than snapping
+    // to calendar boundaries — a calendar-month cutoff would go empty near the end
+    // of a short month, since the week window can already extend past it.
+    // Keeps each event's original index so its card color stays in sync with its
+    // map marker/route color.
+    function categorizeByDate(events) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      const todayDate = new Date(todayStr + 'T00:00:00');
+
+      const weekEnd = new Date(todayDate);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      const weekEndStr = weekEnd.toISOString().slice(0, 10);
+
+      const monthEnd = new Date(todayDate);
+      monthEnd.setDate(monthEnd.getDate() + 29);
+      const monthEndStr = monthEnd.toISOString().slice(0, 10);
+
+      const buckets = { today: [], week: [], month: [] };
+      events.forEach((e, i) => {
+        const d = e.date || todayStr;
+        if (d === todayStr) buckets.today.push({ e, i });
+        else if (d > todayStr && d <= weekEndStr) buckets.week.push({ e, i });
+        else if (d > weekEndStr && d <= monthEndStr) buckets.month.push({ e, i });
+      });
+      return buckets;
+    }
+
+    function renderRibbon(key, items) {
+      const ribbon = document.getElementById(`ribbon-${key}`);
+      const emptyState = document.getElementById(`empty-state-${key}`);
+
+      if (!items.length) {
+        ribbon.innerHTML = '';
+        ribbon.style.display = 'none';
+        emptyState.style.display = 'flex';
+      } else {
+        ribbon.style.display = 'flex';
+        emptyState.style.display = 'none';
+        ribbon.innerHTML = items.map(({ e, i }) => buildCard(e, i)).join('');
+      }
     }
 
     async function fetchLeaveBy(event) {
@@ -1325,7 +1609,7 @@
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
           </button>
         </div>
-        <div class="card-status" style="color: ${color};">${isActive ? 'Active' : 'Upcoming'} · ${dateLabel}</div>
+        <div class="card-status" style="color: ${color};">${isActive ? 'Active' : 'Upcoming'} · ${dateLabel}${event.recurring ? ' 🔁' : ''}</div>
         <div class="card-title">${event.title}</div>
         <div class="card-time">${formatTime12(event.startTime)}${endPart}</div>
         <div class="card-divider"></div>
@@ -1377,25 +1661,50 @@
     }
 
     async function deleteEvent(id) {
-      if (!confirm('Delete this event?')) return;
+      const event = allEvents.find(e => e.id === id);
+      let targetId = id;
+
+      if (event && event.recurring) {
+        const justThis = confirm('This is part of a repeating series.\n\nOK = delete just this event\nCancel = choose to delete the whole series');
+        if (!justThis) {
+          if (!confirm('Delete the entire repeating series? This removes all its events.')) return;
+          targetId = event.seriesId;
+        }
+      } else {
+        if (!confirm('Delete this event?')) return;
+      }
+
       try {
-        await fetch(`${API}/api/events/${id}`, { method: 'DELETE' });
+        await fetch(`${API}/api/events/${targetId}`, { method: 'DELETE' });
         loadEvents();
       } catch (e) { alert('Failed to delete event.'); }
     }
 
     function openModal() {
       editingEventId = null;
+      editingRecurringOccurrence = false;
+      editingIsSeriesEdit = false;
       document.getElementById('modal-title').textContent = 'New event';
       document.getElementById('modal-submit').textContent = 'Add event';
       clearModalFields();
+      setRepeatFieldsVisible(true);
+      applyRecurrenceToForm(null);
       document.getElementById('modal-overlay').classList.add('open');
     }
 
     function openEditModal(id) {
       const event = allEvents.find(e => e.id === id);
       if (!event) return;
-      editingEventId = id;
+
+      if (event.recurring) {
+        editingIsSeriesEdit = confirm('This is part of a repeating series.\n\nOK = edit the whole series\nCancel = edit just this event');
+        editingEventId = editingIsSeriesEdit ? event.seriesId : event.id;
+      } else {
+        editingIsSeriesEdit = false;
+        editingEventId = event.id;
+      }
+      editingRecurringOccurrence = !!event.recurring;
+
       document.getElementById('modal-title').textContent = 'Edit event';
       document.getElementById('modal-submit').textContent = 'Save changes';
       document.getElementById('f-title').value = event.title || '';
@@ -1407,6 +1716,11 @@
       document.getElementById('f-description').value = event.description || '';
       selectedLocation = null;
       document.getElementById('autocomplete-results').style.display = 'none';
+
+      const showRepeatControls = !editingRecurringOccurrence || editingIsSeriesEdit;
+      setRepeatFieldsVisible(showRepeatControls);
+      applyRecurrenceToForm(showRepeatControls ? event.recurrence : null);
+
       document.getElementById('modal-overlay').classList.add('open');
     }
 
@@ -1415,12 +1729,68 @@
       document.getElementById('autocomplete-results').style.display = 'none';
       selectedLocation = null;
       editingEventId = null;
+      editingRecurringOccurrence = false;
+      editingIsSeriesEdit = false;
     }
 
     function clearModalFields() {
       ['f-title', 'f-location', 'f-start', 'f-end', 'f-date', 'f-description'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('f-mode').value = 'CAR';
       selectedLocation = null;
+    }
+
+    function setRepeatFieldsVisible(show) {
+      document.getElementById('f-repeat-field-wrap').style.display = show ? 'block' : 'none';
+      document.getElementById('f-repeat-note').style.display = show ? 'none' : 'block';
+    }
+
+    function onRepeatChange() {
+      const freq = document.getElementById('f-repeat').value;
+      document.getElementById('f-repeat-days-field').style.display = freq === 'WEEKLY' ? 'block' : 'none';
+      document.getElementById('f-repeat-extra-field').style.display = freq ? 'flex' : 'none';
+    }
+
+    function renderRepeatDayChips() {
+      const box = document.getElementById('f-repeat-days');
+      box.innerHTML = DAY_OPTIONS.map(d => `
+        <button type="button" class="day-chip ${selectedRepeatDays.has(d.value) ? 'active' : ''}"
+          onclick="toggleRepeatDay('${d.value}')" title="${d.value}">${d.label}</button>
+      `).join('');
+    }
+
+    function toggleRepeatDay(day) {
+      if (selectedRepeatDays.has(day)) selectedRepeatDays.delete(day);
+      else selectedRepeatDays.add(day);
+      renderRepeatDayChips();
+    }
+
+    function applyRecurrenceToForm(rule) {
+      const select = document.getElementById('f-repeat');
+      const intervalInput = document.getElementById('f-repeat-interval');
+      const untilInput = document.getElementById('f-repeat-until');
+      selectedRepeatDays = new Set();
+
+      if (!rule) {
+        select.value = '';
+        intervalInput.value = 1;
+        untilInput.value = '';
+      } else {
+        select.value = rule.frequency;
+        intervalInput.value = rule.interval || 1;
+        untilInput.value = rule.until || '';
+        if (rule.daysOfWeek) rule.daysOfWeek.forEach(d => selectedRepeatDays.add(d));
+      }
+      renderRepeatDayChips();
+      onRepeatChange();
+    }
+
+    function buildRecurrence() {
+      const freq = document.getElementById('f-repeat').value;
+      if (!freq) return null;
+      const interval = parseInt(document.getElementById('f-repeat-interval').value, 10) || 1;
+      const until = document.getElementById('f-repeat-until').value || null;
+      const daysOfWeek = freq === 'WEEKLY' && selectedRepeatDays.size ? Array.from(selectedRepeatDays) : null;
+      return { frequency: freq, interval, daysOfWeek, until };
     }
 
     function handleOverlayClick(e) {
@@ -1438,18 +1808,25 @@
 
       if (!title || !location || !startTime) { alert('Title, destination, and start time are required.'); return; }
 
+      const body = { title, location, date, startTime, endTime, mode, description };
+      // Recurrence only applies when creating a new event or editing the whole series —
+      // editing a single occurrence never touches the series' repeat rule.
+      if (!editingRecurringOccurrence || editingIsSeriesEdit) {
+        body.recurrence = buildRecurrence();
+      }
+
       try {
         if (editingEventId) {
           await fetch(`${API}/api/events/${editingEventId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, location, date, startTime, endTime, mode, description })
+            body: JSON.stringify(body)
           });
         } else {
           await fetch(`${API}/api/events`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ title, location, date, startTime, endTime, mode, description })
+            body: JSON.stringify(body)
           });
         }
         closeModal();
@@ -1484,6 +1861,50 @@
       selectedLocation = { name, coords: [lng, lat] };
       document.getElementById('f-location').value = name;
       document.getElementById('autocomplete-results').style.display = 'none';
+    }
+
+    function openImportModal() {
+      document.getElementById('import-json').value = '';
+      document.getElementById('import-overlay').classList.add('open');
+    }
+
+    function closeImportModal() {
+      document.getElementById('import-overlay').classList.remove('open');
+    }
+
+    function handleImportOverlayClick(e) {
+      if (e.target === document.getElementById('import-overlay')) closeImportModal();
+    }
+
+    async function submitImport() {
+      const raw = document.getElementById('import-json').value.trim();
+      if (!raw) { alert('Paste some JSON first.'); return; }
+
+      let payload;
+      try {
+        const parsed = JSON.parse(raw);
+        payload = Array.isArray(parsed) ? parsed : [parsed];
+      } catch (e) {
+        alert("That's not valid JSON: " + e.message);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/api/events/import`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          alert('Import failed: ' + (err.error || res.status));
+          return;
+        }
+        closeImportModal();
+        loadEvents();
+      } catch (e) {
+        alert('Failed to reach server. Is it running?');
+      }
     }
 
     function openArchive() {

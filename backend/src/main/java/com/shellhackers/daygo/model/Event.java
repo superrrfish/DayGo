@@ -1,5 +1,8 @@
 package com.shellhackers.daygo.model;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -9,11 +12,15 @@ public record Event(
         String id,
         String title,
         String location,
-        String date,        // yyyy-MM-dd, defaults to today if null on creation
-        String startTime,   // HH:mm
-        String endTime,     // HH:mm, optional
+        String date,
+        String startTime,
+        String endTime,
         TransportMode mode,
-        String description  // optional, may be null
+        String description,
+        RecurrenceRule recurrence,
+        String recurrenceId,
+        String originalDate,
+        @JsonSetter(nulls = Nulls.AS_EMPTY) boolean canceled
 ) {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
