@@ -2407,6 +2407,19 @@
       }
     });
 
+    // Only today's occurrences should draw on the map — a recurring series can
+    // expand into dozens of future occurrences, which used to get passed
+    // straight into drawAllRoutes() and blow past Mapbox's 25-waypoint cap on
+    // a single Directions request, silently failing the route (markers still
+    // showed, since those are placed one at a time and don't have a cap).
+    function getTodayUpcomingEvents() {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      return allEvents.filter(e =>
+        (e.status === 'upcoming' || e.status === 'active') &&
+        (e.date || todayStr) === todayStr
+      );
+    }
+
     function initMap() {
       map = new mapboxgl.Map({
         container: 'map',
@@ -2452,7 +2465,7 @@
       map.setStyle(theme === 'dark'
         ? 'mapbox://styles/mapbox/dark-v11'
         : 'mapbox://styles/mapbox/light-v11');
-      map.once('style.load', () => drawAllRoutes(allEvents.filter(e => e.status === 'upcoming' || e.status === 'active')));
+      map.once('style.load', () => drawAllRoutes(getTodayUpcomingEvents()));
     }
 
     function clearEventOverlays() {
@@ -2493,6 +2506,7 @@
 
       const waypoints = userCoords ? [userCoords, ...valid.map(v => v.coords)] : valid.map(v => v.coords);
       if (waypoints.length < 2) return;
+      if (waypoints.length > 25) waypoints.length = 25; // Mapbox Directions caps a single request at 25 coordinates
 
       try {
         const coordStr = waypoints.map(c => c.join(',')).join(';');
@@ -2718,8 +2732,8 @@
         updateMapLabelLocation(coords);
       }
       loadWeather();
-      const upcoming = allEvents.filter(e => e.status === 'upcoming' || e.status === 'active');
-      if (upcoming.length) drawAllRoutes(upcoming);
+      const todaysEvents = getTodayUpcomingEvents();
+      if (todaysEvents.length) drawAllRoutes(todaysEvents);
     }
 
     // forcePrompt=true is used for the manual "locate me" button: it skips the
@@ -2821,7 +2835,7 @@
         clearEventOverlays();
       } else {
         fetchLeaveBy(upcoming[0]);
-        waitForUserCoords().then(() => drawAllRoutes(upcoming));
+        waitForUserCoords().then(() => drawAllRoutes(getTodayUpcomingEvents()));
       }
 
       renderArchive(past);
